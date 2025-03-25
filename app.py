@@ -3,7 +3,7 @@ import time
 import serial
 import sqlite3
 import numpy as np
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QTextEdit, QComboBox, QLineEdit, QStackedWidget, QLabel, QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QTextEdit, QComboBox, QLineEdit
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
@@ -31,46 +31,16 @@ conn.commit()
 recorrido_actual = []
 MAX_PUNTOS = 6
 
-class MainWindow(QWidget):
+class App(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Monitor de Arduino")
-        self.setGeometry(100, 100, 500, 400)
-        
-        self.layout = QVBoxLayout()
-        
-        # Contenedor de Páginas
-        self.stack = QStackedWidget()
-        self.pagina_principal = PaginaPrincipal(self)
-        self.pagina_historial = PaginaHistorial(self)
-        
-        self.stack.addWidget(self.pagina_principal)
-        self.stack.addWidget(self.pagina_historial)
-        
-        self.layout.addWidget(self.stack)
-
-        # Botones de Navegación
-        nav_layout = QHBoxLayout()
-        self.btn_ir_principal = QPushButton("Inicio")
-        self.btn_ir_principal.clicked.connect(lambda: self.stack.setCurrentWidget(self.pagina_principal))
-        
-        self.btn_ir_historial = QPushButton("Historial")
-        self.btn_ir_historial.clicked.connect(lambda: self.stack.setCurrentWidget(self.pagina_historial))
-
-        nav_layout.addWidget(self.btn_ir_principal)
-        nav_layout.addWidget(self.btn_ir_historial)
-        self.layout.addLayout(nav_layout)
-
-        self.setLayout(self.layout)
-        self.stack.setCurrentWidget(self.pagina_principal)  # Mostrar la página principal al inicio
-
-class PaginaPrincipal(QWidget):
-    def __init__(self, parent):
-        super().__init__()
-        self.parent = parent
         self.initUI()
+        self.cargar_recorridos_disponibles()
     
     def initUI(self):
+        self.setWindowTitle("Monitor de Arduino")
+        self.setGeometry(100, 100, 400, 350)
+        
         layout = QVBoxLayout()
         
         self.text_area = QTextEdit()
@@ -96,7 +66,18 @@ class PaginaPrincipal(QWidget):
         self.btn_guardar = QPushButton("Guardar Recorrido")
         self.btn_guardar.clicked.connect(self.guardar_recorrido)
         layout.addWidget(self.btn_guardar)
-
+        
+        self.combo_recorridos = QComboBox()
+        layout.addWidget(self.combo_recorridos)
+        
+        self.btn_cargar = QPushButton("Cargar Recorrido")
+        self.btn_cargar.clicked.connect(self.cargar_recorrido)
+        layout.addWidget(self.btn_cargar)
+        
+        self.btn_modificar = QPushButton("Modificar Recorrido")
+        self.btn_modificar.clicked.connect(self.modificar_recorrido)
+        layout.addWidget(self.btn_modificar)
+        
         self.setLayout(layout)
     
     def leer_datos(self):
@@ -163,27 +144,9 @@ class PaginaPrincipal(QWidget):
         datos = str(recorrido_actual)
         c.execute("INSERT INTO recorridos (nombre, datos) VALUES (?, ?) ON CONFLICT(nombre) DO UPDATE SET datos = excluded.datos", (nombre, datos))
         conn.commit()
+        self.combo_recorridos.addItem(nombre)
         self.text_area.append(f"Recorrido guardado como {nombre}")
-
-class PaginaHistorial(QWidget):
-    def __init__(self, parent):
-        super().__init__()
-        self.parent = parent
-        self.initUI()
     
-    def initUI(self):
-        layout = QVBoxLayout()
-        
-        self.combo_recorridos = QComboBox()
-        self.cargar_recorridos_disponibles()
-        layout.addWidget(self.combo_recorridos)
-        
-        self.btn_cargar = QPushButton("Cargar Recorrido")
-        self.btn_cargar.clicked.connect(self.cargar_recorrido)
-        layout.addWidget(self.btn_cargar)
-        
-        self.setLayout(layout)
-
     def cargar_recorridos_disponibles(self):
         c.execute("SELECT nombre FROM recorridos")
         for row in c.fetchall():
@@ -196,15 +159,20 @@ class PaginaHistorial(QWidget):
         row = c.fetchone()
         if row:
             recorrido_actual = eval(row[0])
+            self.text_area.append(f"Recorrido {nombre} cargado")
+    
+    def modificar_recorrido(self):
+        self.guardar_recorrido()
+        self.text_area.append("Recorrido modificado correctamente.")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ventana = MainWindow()
+    ventana = App()
     ventana.show()
     sys.exit(app.exec_())
 
-
-'''import sys
+'''  
+import sys
 import time
 import serial
 import sqlite3
@@ -375,5 +343,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ventana = App()
     ventana.show()
-    sys.exit(app.exec_())
-'''
+    sys.exit(app.exec_())'''
