@@ -123,7 +123,9 @@ Explore the [Getting Started Guide](https://docs.abblix.com/docs/getting-started
 In this guide, you will create a working solution step by step, building an OpenID Connect Provider using ASP.NET MVC and the Abblix OIDC Server solution.
 
 To better understand the Abblix OIDC Server product, we recommend visiting our [Documentation](https://docs.abblix.com/docs) site. There, you will find useful information about the product and the OpenID Connect standard.
-                                                                                                                                                [Back to top](#top)
+
+[Back to top](#top)
+
 ## 🗨️ Contacts
 
 For more details about the project or any information regarding this repository, feel free to reach out to me. I'm  here to provide support and answer any questions you may have. Below are the best ways to contact:
