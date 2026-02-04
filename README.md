@@ -128,17 +128,6 @@ In this guide, you will create a working solution step by step, building an Open
 
 To better understand the Abblix OIDC Server product, we recommend visiting our [Documentation](https://docs.abblix.com/docs) site. There, you will find useful information about the product and the OpenID Connect standard.
 
-## 🤝 Feedback and Contributions
-
-I've made every effort to implement all the main aspects of the OpenID protocol in the best possible way. However, the development journey doesn't end here, and your input is crucial for  continuous improvement.
-
-> [!IMPORTANT]
-> Whether you have feedback on features, have encountered any bugs, or have suggestions for enhancements, we're eager to hear from you. Your insights help us make the Abblix OIDC Server library more robust and user-friendly.
-
-Please feel free to contribute by [submitting an issue](https://github.com/Abblix/Oidc.Server/issues) or [joining the discussions](https://github.com/orgs/Abblix/discussions). Each contribution helps us grow and improve.
-
-We appreciate your support and look forward to making our product even better with your help!
-
 ## 🗨️ Contacts
 
 For more details about the project or any information regarding this repository, feel free to reach out to me. I'm  here to provide support and answer any questions you may have. Below are the best ways to contact:
@@ -147,7 +136,9 @@ For more details about the project or any information regarding this repository,
 
 Check my LinkedIn profile:
 
-[![LinkedIn](https://www.linkedin.com/in/juan-guillo-bermejo-a5b940205/)
+<a href="https://www.linkedin.com/in/juan-guillo-bermejo-a5b940205/" target="_blank">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="30" />
+</a>
 
 
 We look forward to assisting you and ensuring your experience with our products is successful and enjoyable!
