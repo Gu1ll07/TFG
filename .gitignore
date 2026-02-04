@@ -1,0 +1,29 @@
+# Node / Electron
+node_modules/
+**/node_modules/
+dist/
+build/
+out/
+release/
+*.log
+
+# Electron binaries/caches
+**/electron/dist/
+**/.cache/
+**/.electron/
+**/.npm/
+**/.yarn/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
