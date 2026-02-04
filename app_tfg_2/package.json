@@ -1,0 +1,14 @@
+{
+  "name": "juan-app-mediciones",
+  "version": "0.3.0",
+  "private": true,
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "start": "node start.js",
+    "electron": "electron ."
+  },
+  "dependencies": {
+    "electron": "^32.0.1"
+  }
+}

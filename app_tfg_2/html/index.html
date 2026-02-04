@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TopoSoft — APP de Topografía</title>
+  <style>
+    :root { --gap:10px; --color-primary:#0061FF; --color-primary-dark:#0B1F44; --color-bg-main:#F5F7FA; --color-bg-card:#FFFFFF; --color-bg-soft:#E6EEFF; --color-text-main:#1F2933; --color-text-muted:#6B7280; --color-border:#E5E7EB; --color-danger:#EF4444; }
+    body { background-color:var(--color-bg-main); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin:24px; color:var(--color-text-main); }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--gap); }
+    .card { background:var(--color-bg-card); border:1px solid var(--color-border); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+    .muted { color:var(--color-text-muted); font-size:.9rem; }
+    label { display:block; margin-top:6px; font-weight:600; color:var(--color-primary-dark); }
+    input, select { padding:10px; border-radius:8px; border:1px solid var(--color-border); background:#fff; color:var(--color-text-main); }
+    input:focus, select:focus { outline:none; border-color:var(--color-primary); }
+    button { padding:10px; border-radius:8px; border:none; cursor:pointer; background:var(--color-primary); color:#fff; font-weight:600; }
+    button:hover { background:#0052d6; }
+    table { width:100%; border-collapse:collapse; margin-top:12px; }
+    th, td { border-bottom:1px solid var(--color-border); padding:8px; text-align:left; }
+    th { color:var(--color-primary-dark); font-weight:600; }
+    .row { display:flex; gap:var(--gap); align-items:center; }
+    .right { text-align:right; }
+    .actions { display:flex; gap:6px; }
+    .danger { color:var(--color-danger); }
+    .badge { font-size:12px; background:var(--color-bg-soft); color:var(--color-primary); border-radius:8px; padding:2px 8px; font-weight:600; }
+  </style>
+</head>
+<body>
+  <h1><strong>TopoSoft</strong></h1>
+  <p class="muted">Listado de las <strong>Mediciones</strong> y <strong>Puntos</strong> con paginación, búsqueda y exportación CSV. Backend: <strong>FastAPI</strong>.</p>
+
+  <!-- CREAR MEDICIONES -->
+  <div class="grid">
+    <div class="card">
+      <h3>Medición</h3>
+      <div class="row">
+        <select id="measurement" style="flex:1"></select>
+        <button id="refreshMeas">Recargar</button>
+        <button id="eliminarMeas" style="background-color: red;">Eliminar</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <input id="measName" placeholder="Nombre de la medición" style="flex:1">
+        <button id="createMeas">Crear</button>
+      </div>
+      <p id="measMsg" class="muted">Selecciona una medicion, crea una nueva o elimina una existente.</p>
+    </div>
+
+    <!-- CREAR Y EDITAR PUNTOS -->
+    <div class="card">
+      <h3> Nuevo punto / Editar punto</h3>
+      <div class="row">
+        <label style="flex:1"> Etiqueta poligonal
+          <input id="label" placeholder="p.ej. P-001" />
+        </label>
+        <label style="flex:1">Distancia
+          <input id="distancia" type="number" step="any" placeholder="0.0"/>
+        </label>
+      </div>
+      <div class="row">
+        <label style="flex:1">Inclinación
+          <input id="inclinacion" type="number" step="any" placeholder="0.0"/>
+        </label>
+        <label style="flex:1">Azimut
+          <input id="azimut" type="number" step="any" placeholder="0.0"/>
+        </label>
+      </div>
+      <br>
+      <div class="row">
+        <button id="save">Guardar</button>
+        <button id="reset">Reset</button>
+        <span id="msg" class="badge"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORTAR Y EXPORTAR EXCEL -->
+  <div class="card" style="margin-top: var(--gap)">
+    <div class="row">
+      <h3 style="flex:1">Buscar, exportar y paginar</h3>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <input id="q" placeholder="Buscar por etiqueta..." style="flex:1">
+      <button id="doSearch">Buscar</button>
+      <button id="clearSearch">Limpiar</button>
+      <button id="exportCsv">Exportar CSV</button>
+    </div>
+  </div>
+
+  <!-- LISTADO DE UN RECORRIDO, POLIGONAL Y PUNTOS -->
+  <div class="card" style="margin-top: var(--gap)">
+    <div class="row">
+      <h3 style="flex:1">Listado</h3>
+      <div class="row" style="gap:6px">
+        <button id="prev">Prev</button>
+        <span id="paginaInfo" class="badge">—</span>
+        <button id="next">Next</button>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Etiqueta poligonal</th>
+          <th>Distancia</th>
+          <th>Inclinación</th>
+          <th>Azimut</th>
+          <th>Medición</th>
+          <th>Creado</th>
+          <th class="right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <script type="module">
+    const API = "http://127.0.0.1:8000";
+    let page = 1;
+    let limit = 10;
+    let editingId = null;
+    let lastQuery = "";
+    let medidaActiva = null;
+    let lastPages = 1;
+
+    const el = (id) => document.getElementById(id);
+    const fmt = (n) => Number(n).toFixed(2);
+
+    async function cargarMedidas() {
+      const res = await fetch(API + "/measurements?page=1&limit=100");
+      const data = await res.json();
+      const sel = el("measurement");
+      sel.innerHTML = "";
+      const optNone = document.createElement("option");
+      optNone.value = ""; optNone.textContent = "-- Ninguna --";
+      sel.appendChild(optNone);
+      //Hay que añadir esto porque sino al eliminar todas las mediciones se fastidia y no puedo crear una nueva
+      if (data.total === 0) {
+        medidaActiva = null; 
+      }
+      for (const m of data.items) {
+        const opt = document.createElement("option");
+        opt.value = String(m.id);
+        opt.textContent = m.name;
+        sel.appendChild(opt);
+      }
+      if (medidaActiva && data.items.some(m => m.id === medidaActiva)) {
+        sel.value = String(medidaActiva);
+      } else {
+        medidaActiva = null;   // ← AÑADIDO
+        sel.value = "";
+      }
+      el("measMsg").textContent = data.total ? "Selecciona una medición para filtrar los puntos." : "Crea tu primera medición.";
+      
+      const input = el("measName");
+      input.disabled = false;
+      input.readOnly = false;
+      input.value = "";
+      input.focus();
+    }
+
+    async function crearMedida() {
+      const name = el("measName").value.trim();
+      if (!name) { alert("Introduce un nombre para la medición"); return; }
+      medidaActiva = null;
+      const res = await fetch(API + "/measurements", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ name })
+      });
+      if (!res.ok) { alert("No se pudo crear la medición"); return; }
+      const m = await res.json();
+      medidaActiva = m.id;
+      el("measName").value = "";
+      await cargarMedidas();
+      await listarPuntos();
+      el("measName").focus();
+    }
+
+    async function eliminarMedida() {
+      if (!medidaActiva) {alert("Selecciona una medición para eliminar.");return;}
+      const sel = el("measurement");
+      const measName = sel.options[sel.selectedIndex]?.textContent ?? "";
+      const ok = confirm(`¿Seguro que quieres eliminar la medición "${measName}"?\n\n` + `Se eliminarán también todos los puntos asociados.`);
+      if (!ok) return;
+      const res = await fetch(`${API}/measurements/${medidaActiva}`, {
+        method: "DELETE"
+      });
+      if (!res.ok) {
+        const txt = await res.text().catch(() => "");
+        alert("No se pudo eliminar la medición.\n" + txt);
+        return;
+      }
+      medidaActiva = null;
+      page = 1;
+      await cargarMedidas();
+      await listarPuntos();
+    }
+
+    async function listarPuntos() {
+      const url = new URL(API + "/points");
+      url.searchParams.set("page", page);
+      url.searchParams.set("limit", limit);
+      if (lastQuery) url.searchParams.set("q", lastQuery);
+      if (medidaActiva) url.searchParams.set("measurement_id", medidaActiva);
+      const res = await fetch(url);
+      const data = await res.json();
+      const tbody = el("tbody");
+      tbody.innerHTML = "";
+      for (const p of data.items) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.id}</td>
+          <td>${p.label ?? ""}</td>
+          <td>${fmt(p.distancia)}</td>
+          <td>${fmt(p.inclinacion)}</td>
+          <td>${fmt(p.azimut)}</td>
+          <td>${p.measurement_id ?? ""}</td>
+          <td>${new Date(p.created_at).toLocaleString()}</td>
+          <td class="right actions">
+            <button data-id="${p.id}" class="edit">Editar</button>
+            <button data-id="${p.id}" style= "background-color: red; color: white;" class="delete danger">Eliminar</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+      el("paginaInfo").textContent = `Página ${data.page} / ${data.total} páginas`;
+
+      tbody.querySelectorAll(".edit").forEach(b => b.onclick = async (e) => {
+        const id = e.target.getAttribute("data-id");
+        const res = await fetch(API + "/points/" + id);
+        const p = await res.json();
+        editingId = p.id;
+        el("label").value = p.label ?? "";
+        el("distancia").value = p.distancia;
+        el("inclinacion").value = p.inclinacion;
+        el("azimut").value = p.azimut;
+        el("msg").textContent = "Editando ID " + p.id;
+      });
+
+      tbody.querySelectorAll(".delete").forEach(b => b.onclick = async (e) => {
+        const id = e.target.getAttribute("data-id");
+        if (confirm("¿Eliminar el punto " + id + "?")) {
+          await fetch(API + "/points/" + id, { method: "DELETE" });
+          await listarPuntos();
+        }
+      });
+    }
+
+    async function guardarPunto() {
+      const payload = {
+        label: el("label").value || null,
+        distancia: parseFloat(el("distancia").value || "0"),
+        inclinacion: parseFloat(el("inclinacion").value || "0"),
+        azimut: parseFloat(el("azimut").value || "0"),
+        measurement_id: medidaActiva ? Number(medidaActiva) : null
+      };
+      if (editingId) {
+        await fetch(API + "/points/" + editingId, {
+          method: "PUT",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(payload)
+        });
+        el("msg").textContent = "Actualizado";
+      } else {
+        await fetch(API + "/points", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(payload)
+        });
+        el("msg").textContent = "Creado";
+      }
+      resetForm();
+      await listarPuntos();
+    }
+
+    function resetForm() {
+      editingId = null;
+      ["label","distancia","inclinacion","azimut"].forEach(id => el(id).value = "");
+      el("msg").textContent = "";
+    }
+
+    // Botones y eventos que se van realizando a lo largo del programa
+    el("save").onclick = guardarPunto;
+    el("reset").onclick = resetForm;
+    el("prev").onclick = () => { if (page>1) { page--; listarPuntos(); } };
+    el("next").onclick = () => { page++; listarPuntos(); };
+    el("doSearch").onclick = () => { lastQuery = el("q").value.trim(); page=1; listarPuntos(); };
+    el("clearSearch").onclick = () => { lastQuery = ""; el("q").value=""; page=1; listarPuntos(); };
+    el("exportCsv").onclick = () => {
+      const url = new URL(API + "/export.csv");
+      if (lastQuery) url.searchParams.set("q", lastQuery);
+      if (medidaActiva) url.searchParams.set("measurement_id", medidaActiva);
+      window.open(url.toString(), "_blank");
+    };
+    el("eliminarMeas").onclick = eliminarMedida;
+    el("createMeas").onclick = crearMedida;
+    el("refreshMeas").onclick = cargarMedidas;
+    el("measurement").onchange = async (e) => { medidaActiva = e.target.value || null; page=1; await listarPuntos(); };
+
+    // Inicialización
+    await cargarMedidas();
+    await listarPuntos();
+  </script>
+</body>
+</html>
