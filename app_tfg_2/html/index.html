@@ -6,11 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TopoSoft — APP de Topografía</title>
   <style>
-    :root { --gap:10px; --color-primary:#0061FF; --color-primary-dark:#0B1F44; --color-bg-main:#F5F7FA; --color-bg-card:#FFFFFF; --color-bg-soft:#E6EEFF; --color-text-main:#1F2933; --color-text-muted:#6B7280; --color-border:#E5E7EB; --color-danger:#EF4444; }
-    body { background-color:var(--color-bg-main); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin:24px; color:var(--color-text-main); }
+    :root { --gap:10px; --color-primary:#b7b7b7; --color-primary-dark:#0B1F44; --color-bg-full:#f3d5bc; --color-bg-card:#FFFFFF; --color-bg-soft:#E6EEFF; --color-text-main:#000000;;  --color-text-hide:#817c7c; --color-border:#E5E7EB; --color-danger:#EF4444; }
+    body { background-color:var(--color-bg-full); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin:24px; color:var(--color-text-main); }
     .grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--gap); }
     .card { background:var(--color-bg-card); border:1px solid var(--color-border); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
-    .muted { color:var(--color-text-muted); font-size:.9rem; }
+    .hide { color:var(--color-text-hide); font-size:.9rem; }
+    .main { color:var(--color-text-main); font-size:.9rem; }
     label { display:block; margin-top:6px; font-weight:600; color:var(--color-primary-dark); }
     input, select { padding:10px; border-radius:8px; border:1px solid var(--color-border); background:#fff; color:var(--color-text-main); }
     input:focus, select:focus { outline:none; border-color:var(--color-primary); }
@@ -27,8 +28,8 @@
   </style>
 </head>
 <body>
-  <h1><strong>TopoSoft</strong></h1>
-  <p class="muted">Listado de las <strong>Mediciones</strong> y <strong>Puntos</strong> con paginación, búsqueda y exportación CSV. Backend: <strong>FastAPI</strong>.</p>
+  <h1 style="font-size: 40px;"><strong>TopoSoft</strong></h1>
+  <p class="main"><strong>Listado de las <strong>Mediciones</strong> y <strong>Puntos</strong> con paginación, búsqueda y exportación CSV. Backend: <strong>FastAPI</strong>.</p>
 
   <!-- CREAR MEDICIONES -->
   <div class="grid">
@@ -43,7 +44,7 @@
         <input id="measName" placeholder="Nombre de la medición" style="flex:1">
         <button id="createMeas">Crear</button>
       </div>
-      <p id="measMsg" class="muted">Selecciona una medicion, crea una nueva o elimina una existente.</p>
+      <p id="measMsg" class="hide">Selecciona una medicion, crea una nueva o elimina una existente.</p>
     </div>
 
     <!-- CREAR Y EDITAR PUNTOS -->
@@ -113,6 +114,17 @@
       <tbody id="tbody"></tbody>
     </table>
   </div>
+
+  <!-- GRAFICAR LOS RECORRIDOS SEGÚN LOS PUNTOS OBTENIDOS -->
+  <div class="card" style="margin-top: var(--gap)">
+    <h3>Graficar recorridos</h3>
+    <div class="row">
+        <select id="measurement" style="flex:1"></select>
+    </div>
+    <!--<p id="measMsg" class="hide">Selecciona una medicion, crea una nueva o elimina una existente.</p>-->
+    <p class="hide">Selecciona una de las mediciones para obtener una representación en 3D del recorrido.</p>
+  </div>
+  
 
   <script type="module">
     const API = "http://127.0.0.1:8000";
