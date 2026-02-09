@@ -23,21 +23,18 @@
     .row { display:flex; gap:var(--gap); align-items:center; }
     .right { text-align:right; }
     .actions { display:flex; gap:6px; }
-    .contenedor-botones { display: flex; justify-content: flex-end; gap: 10px; }
     .danger { color:var(--color-danger); }
     .badge { font-size:12px; background:var(--color-bg-soft); color:var(--color-primary); border-radius:8px; padding:2px 8px; font-weight:600; }
   </style>
 </head>
 <body>
   <h1 style="font-size: 40px;"><strong>TopoSoft</strong></h1>
-  <div class="contenedor-botones">
+  <p class="main"><strong>GRAFICA TU RECORRIDO</strong></p>
+  <div class="eventos">
     <nav>
-      <button><a href="graficar.html">Graficar recorridos</a></button>
-      <button><a href="excel.html">Importar/exportar Excel</a></button>
+      <button><a href="index.html">Página de inicio</a></button>
     </nav>
-  </div> 
-  
-  <p class="main"><strong>Listado de las <strong>Mediciones</strong> y <strong>Puntos</strong> con paginación, búsqueda y exportación CSV. Backend: <strong>FastAPI</strong>.</p>
+  </div>
   
   <!-- CREAR MEDICIONES -->
   <div class="grid">
@@ -83,61 +80,17 @@
     </div>
   </div>
 
-<!-- AÑADIR TRAZA A UN PUNTO DE LA POLIGONAL A Y EXPORTAR EXCEL -->
-<div class="card"  style="margin-top: var(--gap)">
-      <h3>AÑADIR TRAZA A UN PUNTO DE LA POLIGONAL</h3>
-      <div class="row">
-        <label style="flex:1"> PUNTO LOCAL
-          <input id="label" placeholder="p.ej. P-001" />
-        </label>
-        <label style="flex:1">Distancia
-          <input id="distancia" type="number" step="any" placeholder="0.0"/>
-        </label>
-      </div>
-      <div class="row">
-        <label style="flex:1">Inclinación
-          <input id="inclinacion" type="number" step="any" placeholder="0.0"/>
-        </label>
-        <label style="flex:1">Azimut
-          <input id="azimut" type="number" step="any" placeholder="0.0"/>
-        </label>
-      </div>
-      <br>
-      <div class="row">
-        <button id="save">Guardar</button>
-        <button id="reset">Reset</button>
-        <span id="msg" class="badge"></span>
-      </div>
-    </div>
-  </div>
-
-  <!-- LISTADO DE UN RECORRIDO, POLIGONAL Y PUNTOS -->
+  <!-- GRAFICAR LOS RECORRIDOS SEGÚN LOS PUNTOS OBTENIDOS -->
   <div class="card" style="margin-top: var(--gap)">
+    <h3>GRAFICAR RECORRIDOS</h3>
     <div class="row">
-      <h3 style="flex:1">LISTADO POLIGONAL Y TRAZAS</h3>
-      <div class="row" style="gap:6px">
-        <button id="prev">Prev</button>
-        <span id="paginaInfo" class="badge">—</span>
-        <button id="next">Next</button>
-      </div>
+        <select id="graficarMedidas" style="flex:1"></select>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Etiqueta poligonal</th>
-          <th>Distancia</th>
-          <th>Inclinación</th>
-          <th>Azimut</th>
-          <th>Medición</th>
-          <th>Creado</th>
-          <th class="right">Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
+    <!--<p id="measMsg" class="hide">Selecciona una medicion, crea una nueva o elimina una existente.</p>-->
+    <p class="hide">Selecciona una de las mediciones para obtener una representación en 3D del recorrido.</p>
   </div>
   
+
   <script type="module">
     const API = "http://127.0.0.1:8000";
     let page = 1;
