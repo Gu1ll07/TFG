@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TopoSoft — APP de Topografía</title>
+  <title>TopoSoft — Importar/exportar</title>
   <style>
-    :root { --gap:10px; --color-primary:#b7b7b7; --color-primary-dark:#0B1F44; --color-bg-full:#f3d5bc; --color-bg-card:#FFFFFF; --color-bg-soft:#E6EEFF; --color-text-main:#000000;;  --color-text-hide:#817c7c; --color-border:#E5E7EB; --color-danger:#EF4444; }
+    :root { --gap:10px; --color-primary:#1F3A5F; --color-primary-dark:#0B1F44; --color-bg-full:#f3d5bc; --color-bg-card:#FFFFFF; --color-bg-soft:#E6EEFF; --color-text-main:#1F3A5F;;  --color-text-hide:#817c7c; --color-border:#E5E7EB; --color-danger:#EF4444; }
     body { background-color:var(--color-bg-full); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin:24px; color:var(--color-text-main); }
     .grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--gap); }
     .card { background:var(--color-bg-card); border:1px solid var(--color-border); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
@@ -16,7 +16,7 @@
     input, select { padding:10px; border-radius:8px; border:1px solid var(--color-border); background:#fff; color:var(--color-text-main); }
     input:focus, select:focus { outline:none; border-color:var(--color-primary); }
     button { padding:10px; border-radius:8px; border:none; cursor:pointer; background:var(--color-primary); color:#fff; font-weight:600; }
-    button:hover { background:#0052d6; }
+    button:hover { background:#2E5077; }
     table { width:100%; border-collapse:collapse; margin-top:12px; }
     th, td { border-bottom:1px solid var(--color-border); padding:8px; text-align:left; }
     th { color:var(--color-primary-dark); font-weight:600; }
@@ -28,14 +28,15 @@
   </style>
 </head>
 <body>
-  <h1 style="font-size: 40px;"><strong>TopoSoft</strong></h1>
-  <p class="main"><strong>EXPORTAR MEDICIONES O IMPORTAR EXCEL</strong></p>
-  
-  <div class="eventos">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+    <h1 style="font-size: 45px;"><strong>TopoSoft</strong></h1>
     <nav>
-      <button><a href="index.html">Página de inicio</a></button>
+      <button><a style="color: #FFFFFF; text-decoration:none;" href="index.html"><strong>Página principal</strong></a></button>
+      <button><a style="color: #FFFFFF; text-decoration:none;" href="ayuda.html"><strong>Ayuda</strong></a></button>
     </nav>
-  </div>
+  </div> 
+
+  <p class="main"><strong>IMPORTAR/EXPORTAR MEDICIONES</strong></p>
   
   <!-- LISTAR MEDICIONES -->
   <div class="grid">

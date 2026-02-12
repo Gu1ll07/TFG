@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TopoSoft — APP de Topografía</title>
   <style>
-    :root { --gap:10px; --color-primary:#b7b7b7; --color-primary-dark:#0B1F44; --color-bg-full:#f3d5bc; --color-bg-card:#FFFFFF; --color-bg-soft:#E6EEFF; --color-text-main:#000000;;  --color-text-hide:#817c7c; --color-border:#E5E7EB; --color-danger:#EF4444; }
+    :root { --gap:10px; --color-primary:#1F3A5F; --color-primary-dark:#0B1F44; --color-bg-full:#f3d5bc; --color-bg-card:#FFFFFF; --color-bg-soft:#E6EEFF; --color-text-main:#1F3A5F;;  --color-text-hide:#817c7c; --color-border:#E5E7EB; --color-danger:#EF4444; }
     body { background-color:var(--color-bg-full); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin:24px; color:var(--color-text-main); }
     .grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--gap); }
     .card { background:var(--color-bg-card); border:1px solid var(--color-border); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
@@ -16,30 +16,30 @@
     input, select { padding:10px; border-radius:8px; border:1px solid var(--color-border); background:#fff; color:var(--color-text-main); }
     input:focus, select:focus { outline:none; border-color:var(--color-primary); }
     button { padding:10px; border-radius:8px; border:none; cursor:pointer; background:var(--color-primary); color:#fff; font-weight:600; }
-    button:hover { background:#0052d6; }
+    button:hover { background:#2E5077; }
     table { width:100%; border-collapse:collapse; margin-top:12px; }
     th, td { border-bottom:1px solid var(--color-border); padding:8px; text-align:left; }
     th { color:var(--color-primary-dark); font-weight:600; }
     .row { display:flex; gap:var(--gap); align-items:center; }
     .right { text-align:right; }
     .actions { display:flex; gap:6px; }
-    .contenedor-botones { display: flex; justify-content: flex-end; gap: 10px; }
     .danger { color:var(--color-danger); }
     .badge { font-size:12px; background:var(--color-bg-soft); color:var(--color-primary); border-radius:8px; padding:2px 8px; font-weight:600; }
   </style>
 </head>
 <body>
-  <h1 style="font-size: 40px;"><strong>TopoSoft</strong></h1>
-  <div class="contenedor-botones">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+    <h1 style="font-size: 45px;"><strong>TopoSoft</strong></h1>
     <nav>
-      <button><a href="graficar.html">Graficar recorridos</a></button>
-      <button><a href="excel.html">Importar/exportar Excel</a></button>
+      <button><a style="color: #FFFFFF; text-decoration:none;" href="graficar.html"><strong>Graficar recorridos</strong></a></button>
+      <button><a style="color: #FFFFFF; text-decoration:none;" href="excel.html"><strong>Importar/exportar Excel</strong></a></button>
+      <button><a style="color: #FFFFFF; text-decoration:none;" href="ayuda.html"><strong>Ayuda</strong></a></button>
     </nav>
   </div> 
+
+  <!-- <p class="main"><strong>Listado de las <strong>Mediciones</strong> y <strong>Puntos</strong> con paginación, búsqueda y exportación CSV. Backend: <strong>FastAPI</strong>.</p> -->
   
-  <p class="main"><strong>Listado de las <strong>Mediciones</strong> y <strong>Puntos</strong> con paginación, búsqueda y exportación CSV. Backend: <strong>FastAPI</strong>.</p>
-  
-  <!-- CREAR MEDICIONES -->
+  <!-- CREAR MEDICIONES-->
   <div class="grid">
     <div class="card">
       <h3>MEDICIONES</h3>
@@ -272,6 +272,10 @@
     }
 
     async function guardarPunto() {
+      if (!medidaActiva) {
+        alert("Selecciona una medición antes de crear puntos.");
+        return;
+      }
       const payload = {
         label: el("label").value || null,
         distancia: parseFloat(el("distancia").value || "0"),
@@ -309,6 +313,7 @@
     el("reset").onclick = resetForm;
     el("prev").onclick = () => { if (page>1) { page--; listarPuntos(); } };
     el("next").onclick = () => { page++; listarPuntos(); };
+    /*
     el("doSearch").onclick = () => { lastQuery = el("q").value.trim(); page=1; listarPuntos(); };
     el("clearSearch").onclick = () => { lastQuery = ""; el("q").value=""; page=1; listarPuntos(); };
     el("exportCsv").onclick = () => {
@@ -317,14 +322,16 @@
       if (medidaActiva) url.searchParams.set("measurement_id", medidaActiva);
       window.open(url.toString(), "_blank");
     };
+    */
     el("eliminarMeas").onclick = eliminarMedida;
     el("createMeas").onclick = crearMedida;
     el("refreshMeas").onclick = cargarMedidas;
     el("measurement").onchange = async (e) => { medidaActiva = e.target.value || null; page=1; await listarPuntos(); };
+    /*
     el("graficarMedidas").onclick = () => {
       if (!medidaActiva) { alert("Selecciona una medición para graficar."); return; }
       window.open(`graficar.html?measurement_id=${medidaActiva}`, "_blank");
-    };
+    };*/API
     // Inicialización
     await cargarMedidas();
     await listarPuntos();

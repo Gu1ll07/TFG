@@ -144,7 +144,11 @@ def update_point(pid: int, p: PointIn = Body(...)):
         if not obj: raise HTTPException(404, "Point not found")
         if p.measurement_id is not None and not db.get(MeasurementDB, p.measurement_id):
             raise HTTPException(400, "measurement_id no existe")
-        obj.label = p.label, obj.distancia = p.distancia, obj.inclinacion = p.inclinacion, obj.azimut = p.azimut, obj.measurement_id = p.measurement_id
+        obj.label = p.label 
+        obj.distancia = p.distancia
+        obj.inclinacion = p.inclinacion
+        obj.azimut = p.azimut
+        obj.measurement_id = p.measurement_id
         db.commit(); db.refresh(obj)
         return PointOut(id=obj.id, label=obj.label, distancia=obj.distancia, inclinacion=obj.inclinacion, azimut=obj.azimut, measurement_id=obj.measurement_id, created_at=obj.created_at)
 
