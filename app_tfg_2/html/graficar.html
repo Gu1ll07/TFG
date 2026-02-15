@@ -5,284 +5,206 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TopoSoft — Graficar</title>
+
+  <!-- Plotly (CDN) -->
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
   <style>
-    :root { --gap:10px; --color-primary:#1F3A5F; --color-primary-dark:#0B1F44; --color-bg-full:#f3d5bc; --color-bg-card:#FFFFFF; --color-bg-soft:#E6EEFF; --color-text-main:#1F3A5F;;  --color-text-hide:#817c7c; --color-border:#E5E7EB; --color-danger:#EF4444; }
+    :root { --gap:10px; --color-primary:#1F3A5F; --color-primary-dark:#0B1F44; --color-bg-full:#f3d5bc; --color-bg-card:#FFFFFF; --color-bg-soft:#E6EEFF; --color-text-main:#1F3A5F; --color-text-hide:#817c7c; --color-border:#E5E7EB; --color-danger:#EF4444; }
     body { background-color:var(--color-bg-full); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin:24px; color:var(--color-text-main); }
-    .grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--gap); }
     .card { background:var(--color-bg-card); border:1px solid var(--color-border); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+    .row { display:flex; gap:var(--gap); align-items:center; flex-wrap:wrap; }
     .hide { color:var(--color-text-hide); font-size:.9rem; }
-    .main { color:var(--color-text-main); font-size:.9rem; }
     label { display:block; margin-top:6px; font-weight:600; color:var(--color-primary-dark); }
-    input, select { padding:10px; border-radius:8px; border:1px solid var(--color-border); background:#fff; color:var(--color-text-main); }
-    input:focus, select:focus { outline:none; border-color:var(--color-primary); }
+    select { padding:10px; border-radius:8px; border:1px solid var(--color-border); background:#fff; color:var(--color-text-main); min-width:260px; }
+    select:focus { outline:none; border-color:var(--color-primary); }
     button { padding:10px; border-radius:8px; border:none; cursor:pointer; background:var(--color-primary); color:#fff; font-weight:600; }
     button:hover { background:#2E5077; }
-    table { width:100%; border-collapse:collapse; margin-top:12px; }
-    th, td { border-bottom:1px solid var(--color-border); padding:8px; text-align:left; }
-    th { color:var(--color-primary-dark); font-weight:600; }
-    .row { display:flex; gap:var(--gap); align-items:center; }
-    .right { text-align:right; }
-    .actions { display:flex; gap:6px; }
-    .danger { color:var(--color-danger); }
     .badge { font-size:12px; background:var(--color-bg-soft); color:var(--color-primary); border-radius:8px; padding:2px 8px; font-weight:600; }
+    #plot { width: 100%; height: 70vh; min-height: 420px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: .9rem; }
   </style>
 </head>
 <body>
+
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
     <h1 style="font-size: 45px;"><strong>TopoSoft</strong></h1>
-    <nav>
-      <button><a style="color: #FFFFFF; text-decoration:none;" href="index.html"><strong>Páginal principal</strong></a></button>
-      <button><a style="color: #FFFFFF; text-decoration:none;" href="ayuda.html"><strong>Ayuda</strong></a></button>
+    <nav class="row">
+      <button><a style="color: #FFFFFF; text-decoration:none;" href="index.html"><strong>Back</strong></a></button>
+      <button><a style="color: #FFFFFF; text-decoration:none;" href="ayuda.html"><strong>Help!</strong></a></button>
     </nav>
-  </div> 
-
-  <p class="main"><strong>GRAFICA TU RECORRIDO</strong></p>
-
-  <!-- CREAR MEDICIONES -->
-  <div class="grid">
-    <div class="card">
-      <h3>MEDICIONES</h3>
-      <div class="row">
-        <select id="measurement" style="flex:1"></select>
-        <button id="refreshMeas">Recargar</button>
-        <button id="eliminarMeas" style="background-color: red;">Eliminar</button>
-      </div>
-      <div class="row" style="margin-top:8px">
-        <input id="measName" placeholder="Nombre de la medición" style="flex:1">
-        <button id="createMeas">Crear</button>
-      </div>
-      <p id="measMsg" class="hide">Selecciona una medicion, crea una nueva o elimina una existente.</p>
-    </div>
-
-    <!-- CREAR Y EDITAR PUNTOS -->
-    <div class="card">
-      <h3> AÑADIR O EDITAR PUNTO DE LA POLIGONAL</h3>
-      <div class="row">
-        <label style="flex:1"> Etiqueta poligonal
-          <input id="label" placeholder="p.ej. P-001" />
-        </label>
-        <label style="flex:1">Distancia
-          <input id="distancia" type="number" step="any" placeholder="0.0"/>
-        </label>
-      </div>
-      <div class="row">
-        <label style="flex:1">Inclinación
-          <input id="inclinacion" type="number" step="any" placeholder="0.0"/>
-        </label>
-        <label style="flex:1">Azimut
-          <input id="azimut" type="number" step="any" placeholder="0.0"/>
-        </label>
-      </div>
-      <br>
-      <div class="row">
-        <button id="save">Guardar</button>
-        <button id="reset">Reset</button>
-        <span id="msg" class="badge"></span>
-      </div>
-    </div>
   </div>
 
-  <!-- GRAFICAR LOS RECORRIDOS SEGÚN LOS PUNTOS OBTENIDOS -->
+  <div class="card">
+    <h3>GRAFICAR POLIGONAL (3D)</h3>
+    <div class="row" style="margin-top:8px">
+      <label>Medición
+        <select id="measurement"></select>
+      </label>
+      <button id="btnGraficar" style="margin-top:22px">Graficar</button>
+      <span id="status" class="badge"></span>
+    </div>
+
+    <p class="hide" style="margin-top:10px;">
+      Convención usada (ajústala si tu proyecto usa otra):
+      <span class="mono">X = Este</span>, <span class="mono">Y = Norte</span>, <span class="mono">Z = Arriba</span>.
+      Azimut: 0° = Norte, sentido horario. Inclinación: respecto al horizontal (positiva hacia arriba).
+    </p>
+  </div>
+
   <div class="card" style="margin-top: var(--gap)">
-    <h3>GRAFICAR RECORRIDOS</h3>
-    <div class="row">
-        <select id="graficarMedidas" style="flex:1"></select>
-    </div>
-    <!--<p id="measMsg" class="hide">Selecciona una medicion, crea una nueva o elimina una existente.</p>-->
-    <p class="hide">Selecciona una de las mediciones para obtener una representación en 3D del recorrido.</p>
+    <div id="plot"></div>
+    <p id="emptyMsg" class="hide" style="display:none;">Esta medición no tiene puntos todavía.</p>
   </div>
-  
 
   <script type="module">
     const API = "http://127.0.0.1:8000";
-    let page = 1;
-    let limit = 10;
-    let editingId = null;
-    let lastQuery = "";
-    let medidaActiva = null;
-    let lastPages = 1;
-
     const el = (id) => document.getElementById(id);
-    const fmt = (n) => Number(n).toFixed(2);
+
+    function deg2rad(d) { return d * Math.PI / 180.0; }
+
+    function getQueryMeasurementId() {
+      const url = new URL(window.location.href);
+      const mid = url.searchParams.get("measurement_id");
+      return mid ? Number(mid) : null;
+    }
+
+    function setQueryMeasurementId(mid) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("measurement_id", String(mid));
+      window.history.replaceState({}, "", url);
+    }
 
     async function cargarMedidas() {
-      const res = await fetch(API + "/measurements?page=1&limit=100");
+      const res = await fetch(API + "/measurements?page=1&limit=200");
       const data = await res.json();
+
       const sel = el("measurement");
       sel.innerHTML = "";
+
       const optNone = document.createElement("option");
-      optNone.value = ""; optNone.textContent = "-- Ninguna --";
+      optNone.value = ""; optNone.textContent = "-- Selecciona --";
       sel.appendChild(optNone);
-      //Hay que añadir esto porque sino al eliminar todas las mediciones se fastidia y no puedo crear una nueva
-      if (data.total === 0) {
-        medidaActiva = null; 
-      }
+
       for (const m of data.items) {
         const opt = document.createElement("option");
         opt.value = String(m.id);
         opt.textContent = m.name;
         sel.appendChild(opt);
       }
-      if (medidaActiva && data.items.some(m => m.id === medidaActiva)) {
-        sel.value = String(medidaActiva);
-      } else {
-        medidaActiva = null;   // ← AÑADIDO
-        sel.value = "";
+
+      const mid = getQueryMeasurementId();
+      if (mid && data.items.some(m => m.id === mid)) sel.value = String(mid);
+    }
+
+    async function fetchAllPoints(measurementId) {
+      const limit = 100;
+      let page = 1;
+      let all = [];
+
+      while (true) {
+        const url = new URL(API + "/points");
+        url.searchParams.set("page", page);
+        url.searchParams.set("limit", limit);
+        url.searchParams.set("measurement_id", measurementId);
+
+        const res = await fetch(url.toString());
+        const data = await res.json();
+
+        all = all.concat(data.items || []);
+        if (page >= (data.pages || 1)) break;
+        page += 1;
       }
-      el("measMsg").textContent = data.total ? "Selecciona una medición para filtrar los puntos." : "Crea tu primera medición.";
-      
-      const input = el("measName");
-      input.disabled = false;
-      input.readOnly = false;
-      input.value = "";
-      input.focus();
+
+      // El backend devuelve por defecto en DESC; reordenamos a ASC para el recorrido
+      all.sort((a, b) => a.id - b.id);
+      return all;
     }
 
-    async function crearMedida() {
-      const name = el("measName").value.trim();
-      if (!name) { alert("Introduce un nombre para la medición"); return; }
-      medidaActiva = null;
-      const res = await fetch(API + "/measurements", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ name })
+    function buildTrajectory(points) {
+      let x = 0, y = 0, z = 0;
+
+      const X = [x], Y = [y], Z = [z];
+      const hover = ["P0 (origen)<br>x=0.000<br>y=0.000<br>z=0.000"];
+
+      points.forEach((p, i) => {
+        const d = Number(p.distancia || 0);
+        const az = deg2rad(Number(p.azimut || 0));
+        const inc = deg2rad(Number(p.inclinacion || 0));
+
+        const horiz = d * Math.cos(inc);
+        const dx = horiz * Math.sin(az);
+        const dy = horiz * Math.cos(az);
+        const dz = d * Math.sin(inc);
+
+        x += dx; y += dy; z += dz;
+
+        X.push(x); Y.push(y); Z.push(z);
+
+        const label = p.label ? String(p.label) : `P${i+1}`;
+        hover.push(
+          `${label}<br>` +
+          `x=${x.toFixed(3)}<br>y=${y.toFixed(3)}<br>z=${z.toFixed(3)}<br>` +
+          `dist=${d.toFixed(3)} | az=${Number(p.azimut).toFixed(2)}° | inc=${Number(p.inclinacion).toFixed(2)}°`
+        );
       });
-      if (!res.ok) { alert("No se pudo crear la medición"); return; }
-      const m = await res.json();
-      medidaActiva = m.id;
-      el("measName").value = "";
-      await cargarMedidas();
-      await listarPuntos();
-      el("measName").focus();
+
+      return { X, Y, Z, hover };
     }
 
-    async function eliminarMedida() {
-      if (!medidaActiva) {alert("Selecciona una medición para eliminar.");return;}
+    function renderPlot(traj, title) {
+      const trace = {
+        type: "scatter3d",
+        mode: "lines+markers",
+        x: traj.X, y: traj.Y, z: traj.Z,
+        text: traj.hover,
+        hoverinfo: "text",
+        name: "Recorrido"
+      };
+
+      const layout = {
+        title: { text: title },
+        margin: { l: 0, r: 0, b: 0, t: 40 },
+        scene: {
+          xaxis: { title: "X (Este)" },
+          yaxis: { title: "Y (Norte)" },
+          zaxis: { title: "Z (Arriba)" },
+          aspectmode: "data"
+        }
+      };
+
+      Plotly.newPlot("plot", [trace], layout, { responsive: true });
+    }
+
+    async function graficar() {
       const sel = el("measurement");
-      const measName = sel.options[sel.selectedIndex]?.textContent ?? "";
-      const ok = confirm(`¿Seguro que quieres eliminar la medición "${measName}"?\n\n` + `Se eliminarán también todos los puntos asociados.`);
-      if (!ok) return;
-      const res = await fetch(`${API}/measurements/${medidaActiva}`, {
-        method: "DELETE"
-      });
-      if (!res.ok) {
-        const txt = await res.text().catch(() => "");
-        alert("No se pudo eliminar la medición.\n" + txt);
+      const mid = sel.value ? Number(sel.value) : null;
+      if (!mid) { alert("Selecciona una medición."); return; }
+
+      setQueryMeasurementId(mid);
+      el("status").textContent = "Cargando puntos…";
+      el("emptyMsg").style.display = "none";
+
+      const points = await fetchAllPoints(mid);
+
+      if (!points.length) {
+        Plotly.purge("plot");
+        el("status").textContent = "0 puntos";
+        el("emptyMsg").style.display = "block";
         return;
       }
-      medidaActiva = null;
-      page = 1;
-      await cargarMedidas();
-      await listarPuntos();
+
+      const traj = buildTrajectory(points);
+      const measName = sel.options[sel.selectedIndex]?.textContent ?? `Medición ${mid}`;
+      renderPlot(traj, `Recorrido 3D — ${measName} (${points.length} tramos)`);
+
+      el("status").textContent = `${points.length} puntos`;
     }
 
-    async function listarPuntos() {
-      const url = new URL(API + "/points");
-      url.searchParams.set("page", page);
-      url.searchParams.set("limit", limit);
-      if (lastQuery) url.searchParams.set("q", lastQuery);
-      if (medidaActiva) url.searchParams.set("measurement_id", medidaActiva);
-      const res = await fetch(url);
-      const data = await res.json();
-      const tbody = el("tbody");
-      tbody.innerHTML = "";
-      for (const p of data.items) {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${p.id}</td>
-          <td>${p.label ?? ""}</td>
-          <td>${fmt(p.distancia)}</td>
-          <td>${fmt(p.inclinacion)}</td>
-          <td>${fmt(p.azimut)}</td>
-          <td>${p.measurement_id ?? ""}</td>
-          <td>${new Date(p.created_at).toLocaleString()}</td>
-          <td class="right actions">
-            <button data-id="${p.id}" class="edit">Editar</button>
-            <button data-id="${p.id}" style= "background-color: red; color: white;" class="delete danger">Eliminar</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      }
-      el("paginaInfo").textContent = `Página ${data.page} / ${data.pages} páginas`;
+    el("btnGraficar").onclick = graficar;
 
-      tbody.querySelectorAll(".edit").forEach(b => b.onclick = async (e) => {
-        const id = e.target.getAttribute("data-id");
-        const res = await fetch(API + "/points/" + id);
-        const p = await res.json();
-        editingId = p.id;
-        el("label").value = p.label ?? "";
-        el("distancia").value = p.distancia;
-        el("inclinacion").value = p.inclinacion;
-        el("azimut").value = p.azimut;
-        el("msg").textContent = "Editando ID " + p.id;
-      });
-
-      tbody.querySelectorAll(".delete").forEach(b => b.onclick = async (e) => {
-        const id = e.target.getAttribute("data-id");
-        if (confirm("¿Eliminar el punto " + id + "?")) {
-          await fetch(API + "/points/" + id, { method: "DELETE" });
-          await listarPuntos();
-        }
-      });
-    }
-
-    async function guardarPunto() {
-      const payload = {
-        label: el("label").value || null,
-        distancia: parseFloat(el("distancia").value || "0"),
-        inclinacion: parseFloat(el("inclinacion").value || "0"),
-        azimut: parseFloat(el("azimut").value || "0"),
-        measurement_id: medidaActiva ? Number(medidaActiva) : null
-      };
-      if (editingId) {
-        await fetch(API + "/points/" + editingId, {
-          method: "PUT",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify(payload)
-        });
-        el("msg").textContent = "Actualizado";
-      } else {
-        await fetch(API + "/points", {
-          method: "POST",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify(payload)
-        });
-        el("msg").textContent = "Creado";
-      }
-      resetForm();
-      await listarPuntos();
-    }
-
-    function resetForm() {
-      editingId = null;
-      ["label","distancia","inclinacion","azimut"].forEach(id => el(id).value = "");
-      el("msg").textContent = "";
-    }
-
-    // Botones y eventos que se van realizando a lo largo del programa
-    el("save").onclick = guardarPunto;
-    el("reset").onclick = resetForm;
-    el("prev").onclick = () => { if (page>1) { page--; listarPuntos(); } };
-    el("next").onclick = () => { page++; listarPuntos(); };
-    el("doSearch").onclick = () => { lastQuery = el("q").value.trim(); page=1; listarPuntos(); };
-    el("clearSearch").onclick = () => { lastQuery = ""; el("q").value=""; page=1; listarPuntos(); };
-    el("exportCsv").onclick = () => {
-      const url = new URL(API + "/export.csv");
-      if (lastQuery) url.searchParams.set("q", lastQuery);
-      if (medidaActiva) url.searchParams.set("measurement_id", medidaActiva);
-      window.open(url.toString(), "_blank");
-    };
-    el("eliminarMeas").onclick = eliminarMedida;
-    el("createMeas").onclick = crearMedida;
-    el("refreshMeas").onclick = cargarMedidas;
-    el("measurement").onchange = async (e) => { medidaActiva = e.target.value || null; page=1; await listarPuntos(); };
-    el("graficarMedidas").onclick = () => {
-      if (!medidaActiva) { alert("Selecciona una medición para graficar."); return; }
-      window.open(`graficar.html?measurement_id=${medidaActiva}`, "_blank");
-    };
-    // Inicialización
     await cargarMedidas();
-    await listarPuntos();
+    if (getQueryMeasurementId()) await graficar();
   </script>
 </body>
 </html>

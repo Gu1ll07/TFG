@@ -33,7 +33,7 @@
     <nav>
       <button><a style="color: #FFFFFF; text-decoration:none;" href="graficar.html"><strong>Graficar recorridos</strong></a></button>
       <button><a style="color: #FFFFFF; text-decoration:none;" href="excel.html"><strong>Importar/exportar Excel</strong></a></button>
-      <button><a style="color: #FFFFFF; text-decoration:none;" href="ayuda.html"><strong>Ayuda</strong></a></button>
+      <button><a style="color: #FFFFFF; text-decoration:none;" href="ayuda.html"><strong>Help!</strong></a></button>
     </nav>
   </div> 
 
@@ -87,7 +87,7 @@
 <div class="card"  style="margin-top: var(--gap)">
       <h3>AÑADIR TRAZA A UN PUNTO DE LA POLIGONAL</h3>
       <div class="row">
-        <label style="flex:1"> PUNTO LOCAL
+        <label style="flex:1"> PUNTOS DESDE MI PolPoint
           <input id="label" placeholder="p.ej. P-001" />
         </label>
         <label style="flex:1">Distancia
@@ -110,6 +110,7 @@
       </div>
     </div>
   </div>
+
 
   <!-- LISTADO DE UN RECORRIDO, POLIGONAL Y PUNTOS -->
   <div class="card" style="margin-top: var(--gap)">
@@ -331,7 +332,8 @@
     el("graficarMedidas").onclick = () => {
       if (!medidaActiva) { alert("Selecciona una medición para graficar."); return; }
       window.open(`graficar.html?measurement_id=${medidaActiva}`, "_blank");
-    };*/API
+    };*/
+
     // Inicialización
     await cargarMedidas();
     await listarPuntos();
