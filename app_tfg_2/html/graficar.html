@@ -27,6 +27,7 @@
 </head>
 <body>
 
+  <!--Nombre y botones de navegación-->
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
     <h1 style="font-size: 45px;"><strong>TopoSoft</strong></h1>
     <nav class="row">
@@ -37,19 +38,13 @@
 
   <div class="card">
     <h3>GRAFICAR POLIGONAL (3D)</h3>
-    <div class="row" style="margin-top:8px">
+    <div class="row">
       <label>Medición
         <select id="measurement"></select>
       </label>
-      <button id="btnGraficar" style="margin-top:22px">Graficar</button>
+      <button id="btnGraficar" style="margin-top:5px">Graficar</button>
       <span id="status" class="badge"></span>
     </div>
-
-    <p class="hide" style="margin-top:10px;">
-      Convención usada (ajústala si tu proyecto usa otra):
-      <span class="mono">X = Este</span>, <span class="mono">Y = Norte</span>, <span class="mono">Z = Arriba</span>.
-      Azimut: 0° = Norte, sentido horario. Inclinación: respecto al horizontal (positiva hacia arriba).
-    </p>
   </div>
 
   <div class="card" style="margin-top: var(--gap)">
@@ -83,7 +78,7 @@
       sel.innerHTML = "";
 
       const optNone = document.createElement("option");
-      optNone.value = ""; optNone.textContent = "-- Selecciona --";
+      optNone.value = ""; optNone.textContent = "- Selecciona una medición -";
       sel.appendChild(optNone);
 
       for (const m of data.items) {
@@ -121,7 +116,7 @@
       return all;
     }
 
-    function buildTrajectory(points) {
+    function buildTrayectoria(points) {
       let x = 0, y = 0, z = 0;
 
       const X = [x], Y = [y], Z = [z];
@@ -182,7 +177,7 @@
       if (!mid) { alert("Selecciona una medición."); return; }
 
       setQueryMeasurementId(mid);
-      el("status").textContent = "Cargando puntos…";
+      el("status").textContent = "Cargando recorrido topográfico…";
       el("emptyMsg").style.display = "none";
 
       const points = await fetchAllPoints(mid);
@@ -194,7 +189,7 @@
         return;
       }
 
-      const traj = buildTrajectory(points);
+      const traj = buildTrayectoria(points);
       const measName = sel.options[sel.selectedIndex]?.textContent ?? `Medición ${mid}`;
       renderPlot(traj, `Recorrido 3D — ${measName} (${points.length} tramos)`);
 
