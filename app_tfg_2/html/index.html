@@ -7,10 +7,10 @@
   <title>TopoSoft — APP de Topografía</title>
 
   <style>
-    :root { --gap:10px; --color-primary:#1F3A5F; --color-primary-dark:#0B1F44; --color-bg-full:#f3d5bc; --color-bg-card:#FFFFFF; --color-bg-soft:#E6EEFF; --color-text-main:#1F3A5F;;  --color-text-hide:#817c7c; --color-border:#E5E7EB; --color-danger:#EF4444; }
+    :root { --gap:10px; --color-primary:#1F3A5F; --color-primary-dark:#0B1F44; --color-bg-full:#f3d5bc; --color-bg-container:#FFFFFF; --color-bg-soft:#E6EEFF; --color-text-main:#1F3A5F;;  --color-text-hide:#817c7c; --color-border:#E5E7EB; --color-danger:#EF4444; }
     body { background-color:var(--color-bg-full); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin:24px; color:var(--color-text-main); }
     .grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--gap); }
-    .card { background:var(--color-bg-card); border:1px solid var(--color-border); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+    .container { background:var(--color-bg-container); border:1px solid var(--color-border); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
     .hide { color:var(--color-text-hide); font-size:.9rem; }
     .main { color:var(--color-text-main); font-size:.9rem; }
     label { display:block; margin-top:6px; font-weight:600; color:var(--color-primary-dark); }
@@ -43,7 +43,7 @@
   
   <!-- CREAR MEDICIONES -->
   <div class="grid">
-    <div class="card">
+    <div class="container">
       <h3>MEDICIONES</h3>
       <div class="row">
         <select id="measurement" style="flex:1"></select>
@@ -58,7 +58,7 @@
     </div>
 
     <!-- CREAR Y EDITAR PUNTOS -->
-    <div class="card">
+    <div class="container">
       <h3> AÑADIR O EDITAR PUNTO DE LA POLIGONAL</h3>
       <div class="row">
         <label style="flex:1"> Etiqueta poligonal
@@ -86,7 +86,7 @@
   </div>
 
 <!-- AÑADIR RADIACIONES A UN PUNTO DE LA POLIGONAL-->
-<div class="card"  style="margin-top: var(--gap)">
+<div class="container"  style="margin-top: var(--gap)">
       <h3>AÑADIR RADIACIÓN A UN PUNTO DE LA POLIGONAL</h3>
       <div class="row">
         <label style="flex:1"> ETIQUETA RADIACIÓN
@@ -115,7 +115,7 @@
 
 
   <!-- LISTADO DE UN RECORRIDO, POLIGONAL Y PUNTOS -->
-  <div class="card" style="margin-top: var(--gap)">
+  <div class="container" style="margin-top: var(--gap)">
     <div class="row">
       <h3 style="flex:1">LISTADO POLIGONAL Y TRAZAS</h3>
       <div class="row" style="gap:6px">
