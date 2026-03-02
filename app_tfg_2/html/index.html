@@ -21,7 +21,7 @@
     table { width:100%; border-collapse:collapse; margin-top:12px; }
     th, td { border-bottom:1px solid var(--color-border); padding:8px; text-align:left; }
     th { color:var(--color-primary-dark); font-weight:600; }
-    .row { display:flex; gap:var(--gap); align-items:center; }
+    .columna { display:flex; gap:var(--gap); align-items:center; }
     .right { text-align:right; }
     .actions { display:flex; gap:6px; }
     .danger { color:var(--color-danger); }
@@ -36,7 +36,6 @@
     <h1 style="font-size: 45px;"><strong>TopoSoft</strong></h1>
     <nav>
       <button><a style="color: #FFFFFF; text-decoration:none;" href="graficar.html"><strong>Graficar recorridos</strong></a></button>
-      <button><a style="color: #FFFFFF; text-decoration:none;" href="excel.html"><strong>Importar/exportar Excel</strong></a></button>
       <button><a style="color: #FFFFFF; text-decoration:none;" href="ayuda.html"><strong>Help!</strong></a></button>
     </nav>
   </div> 
@@ -45,12 +44,12 @@
   <div class="grid">
     <div class="container">
       <h3>MEDICIONES</h3>
-      <div class="row">
+      <div class="columna">
         <select id="measurement" style="flex:1"></select>
         <button id="refreshMedida">Recargar</button>
         <button id="deleteMedida" style="background-color: red;">Eliminar</button>
       </div>
-      <div class="row" style="margin-top:8px">
+      <div class="columna" style="margin-top:8px">
         <input id="measName" placeholder="Nombre de la medición" style="flex:1">
         <button id="createMedida">Crear</button>
       </div>
@@ -60,7 +59,7 @@
     <!-- CREAR Y EDITAR PUNTOS -->
     <div class="container">
       <h3> AÑADIR O EDITAR PUNTO DE LA POLIGONAL</h3>
-      <div class="row">
+      <div class="columna">
         <label style="flex:1"> Etiqueta poligonal
           <input id="label" type ="number" placeholder="p.ej. 01" />
         </label>
@@ -68,7 +67,7 @@
           <input id="distancia" type="number" step="any" placeholder="0.0"/>
         </label>
       </div>
-      <div class="row">
+      <div class="columna">
         <label style="flex:1">Inclinación
           <input id="inclinacion" type="number" step="any" placeholder="0.0"/>
         </label>
@@ -77,7 +76,7 @@
         </label>
       </div>
       <br>
-      <div class="row">
+      <div class="columna">
         <button id="save">Guardar</button>
         <button id="reset">Reset</button>
         <span id="msg" class="badge"></span>
@@ -86,39 +85,70 @@
   </div>
 
 <!-- AÑADIR RADIACIONES A UN PUNTO DE LA POLIGONAL-->
-<div class="container"  style="margin-top: var(--gap)">
-      <h3>AÑADIR RADIACIÓN A UN PUNTO DE LA POLIGONAL</h3>
-      <div class="row">
-        <label style="flex:1"> ETIQUETA RADIACIÓN
-          <input id="label" placeholder="p.ej. P-001" />
-        </label>
-        <label style="flex:1">Distancia radiación
-          <input id="distancia" type="number" step="any" placeholder="0.0"/>
-        </label>
-      </div>
-      <div class="row">
-        <label style="flex:1">Inclinación radiación
-          <input id="inclinacion" type="number" step="any" placeholder="0.0"/>
-        </label>
-        <label style="flex:1">Azimut radiación
-          <input id="azimut" type="number" step="any" placeholder="0.0"/>
-        </label>
-      </div>
-      <br>
-      <div class="row">
-        <button id="save">Guardar</button>
-        <button id="reset">Reset</button>
-        <span id="msg" class="badge"></span>
-      </div>
+  <div class="container" style="margin-top: var(--gap)">
+    <h3>AÑADIR RADIACIÓN A UN PUNTO DE LA POLIGONAL</h3>
+
+    <div class="columna">
+      <label style="flex:1">Estación (punto base)
+        <select id="rad_base_point" style="width:100%"></select>
+      </label>
+      <label style="flex:1">Etiqueta radiación
+        <input id="rad_label" placeholder="p.ej. P-001" />
+      </label>
+    </div>
+
+    <div class="columna">
+      <label style="flex:1">Distancia radiación
+        <input id="rad_distancia" type="number" step="any" placeholder="0.0"/>
+      </label>
+      <label style="flex:1">Inclinación radiación
+        <input id="rad_inclinacion" type="number" step="any" placeholder="0.0"/>
+      </label>
+      <label style="flex:1">Azimut radiación
+        <input id="rad_azimut" type="number" step="any" placeholder="0.0"/>
+      </label>
+    </div>
+
+    <br>
+    <div class="columna">
+      <button id="rad_save">Guardar radiación</button>
+      <button id="rad_reset">Reset</button>
+      <span id="rad_msg" class="badge"></span>
     </div>
   </div>
 
+  <!-- LISTADO DE RADIACIONES -->
+  <div class="container" style="margin-top: var(--gap)">
+    <div class="columna">
+      <h3 style="flex:1">LISTADO RADIACIONES</h3>
+      <div class="columna" style="gap:6px">
+        <button id="rad_prev">Prev</button>
+        <span id="rad_paginaInfo" class="badge">—</span>
+        <button id="rad_next">Next</button>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Etiqueta</th>
+          <th>Dist</th>
+          <th>Inc</th>
+          <th>Az</th>
+          <th>BasePoint</th>
+          <th>Creado</th>
+          <th class="right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="rad_tbody"></tbody>
+    </table>
+  </div>
 
   <!-- LISTADO DE UN RECORRIDO, POLIGONAL Y PUNTOS -->
   <div class="container" style="margin-top: var(--gap)">
-    <div class="row">
+    <div class="columna">
       <h3 style="flex:1">LISTADO POLIGONAL Y TRAZAS</h3>
-      <div class="row" style="gap:6px">
+      <div class="columna" style="gap:6px">
         <button id="prev">Prev</button>
         <span id="paginaInfo" class="badge">—</span>
         <button id="next">Next</button>
@@ -141,6 +171,7 @@
     </table>
   </div>
   
+  <!--PARTE DE JAVASCRIPT, FUNCIONES -->
   <script type="module">
     const API = "http://127.0.0.1:8000";
     let page = 1;
@@ -149,6 +180,12 @@
     let lastQuery = "";
     let medidaActiva = null;
     let lastPages = 1;
+
+    // Radiaciones
+    let radPage = 1;
+    let radLimit = 10;
+    let radEditingId = null;
+    let radLastPages = 1;
 
     const el = (id) => document.getElementById(id);
     const fmt = (n) => Number(n).toFixed(2);
@@ -174,7 +211,7 @@
       if (medidaActiva && data.items.some(m => m.id === medidaActiva)) {
         sel.value = String(medidaActiva);
       } else {
-        medidaActiva = null;   // ← AÑADIDO
+        medidaActiva = null;   // AÑADIDO
         sel.value = "";
       }
       el("measMsg").textContent = data.total ? "Selecciona una medición para filtrar los puntos." : "Crea tu primera medición.";
@@ -201,6 +238,8 @@
       el("measName").value = "";
       await cargarMedidas();
       await listarPuntos();
+      await cargarPuntosBase();
+      await listarRadiaciones();
       el("measName").focus();
     }
 
@@ -222,6 +261,8 @@
       page = 1;
       await cargarMedidas();
       await listarPuntos();
+      await cargarPuntosBase();
+      await listarRadiaciones();
     }
 
     async function listarPuntos() {
@@ -232,6 +273,7 @@
       if (medidaActiva) url.searchParams.set("measurement_id", medidaActiva);
       const res = await fetch(url);
       const data = await res.json();
+      lastPages = data.pages || 1;
       const tbody = el("tbody");
       tbody.innerHTML = "";
       for (const p of data.items) {
@@ -270,8 +312,166 @@
         if (confirm("¿Quieres eliminar el punto " + id + "?")) {
           await fetch(API + "/points/" + id, { method: "DELETE" });
           await listarPuntos();
+          await cargarPuntosBase();
+          await listarRadiaciones();
         }
       });
+    }
+
+    async function cargarPuntosBase() {
+      const sel = el("rad_base_point");
+      sel.innerHTML = "";
+
+      const optNone = document.createElement("option");
+      optNone.value = "";
+      optNone.textContent = "-- Selecciona punto base --";
+      sel.appendChild(optNone);
+
+      if (!medidaActiva) return;
+
+      const pageSize = 100; // backend /points => limit <= 100
+      let p = 1;
+      let all = [];
+
+      while (true) {
+        const url = new URL(API + "/points");
+        url.searchParams.set("page", p);
+        url.searchParams.set("limit", pageSize);
+        url.searchParams.set("measurement_id", medidaActiva);
+
+        const res = await fetch(url);
+        if (!res.ok) {
+          console.warn("cargarPuntosBase failed", res.status);
+          return;
+        }
+        const data = await res.json();
+        all = all.concat(data.items || []);
+        if (p >= (data.pages || 1)) break;
+        p += 1;
+      }
+
+      const pts = all.sort((a, b) => a.id - b.id);
+      for (const pt of pts) {
+        const opt = document.createElement("option");
+        opt.value = String(pt.id);
+        opt.textContent = `ID ${pt.id} — ${pt.label ?? ""}`;
+        sel.appendChild(opt);
+      }
+    }
+
+    async function listarRadiaciones() {
+      const url = new URL(API + "/radiations");
+      url.searchParams.set("page", radPage);
+      url.searchParams.set("limit", radLimit);
+      if (medidaActiva) url.searchParams.set("measurement_id", medidaActiva);
+
+      const res = await fetch(url);
+      const data = await res.json();
+      radLastPages = data.pages || 1;
+
+      const tbody = el("rad_tbody");
+      tbody.innerHTML = "";
+
+      for (const r of (data.items || [])) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.id}</td>
+          <td>${r.label ?? ""}</td>
+          <td>${fmt(r.distancia)}</td>
+          <td>${fmt(r.inclinacion)}</td>
+          <td>${fmt(r.azimut)}</td>
+          <td>${r.base_point_id}</td>
+          <td>${new Date(r.created_at).toLocaleString()}</td>
+          <td class="right actions">
+            <button data-id="${r.id}" class="rad_edit">Editar</button>
+            <button data-id="${r.id}" style="background-color:red; color:white;" class="rad_delete danger">Eliminar</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      el("rad_paginaInfo").textContent = `Página ${data.page} / ${data.pages} páginas`;
+
+      tbody.querySelectorAll(".rad_edit").forEach(b => b.onclick = async (e) => {
+        const id = e.target.getAttribute("data-id");
+        const res = await fetch(API + "/radiations/" + id);
+        const r = await res.json();
+        radEditingId = r.id;
+
+        el("rad_label").value = r.label ?? "";
+        el("rad_distancia").value = r.distancia;
+        el("rad_inclinacion").value = r.inclinacion;
+        el("rad_azimut").value = r.azimut;
+        el("rad_base_point").value = String(r.base_point_id);
+
+        el("rad_msg").textContent = "Editando ID " + r.id;
+      });
+
+      tbody.querySelectorAll(".rad_delete").forEach(b => b.onclick = async (e) => {
+        const id = e.target.getAttribute("data-id");
+        if (confirm("¿Quieres eliminar la radiación " + id + "?")) {
+          await fetch(API + "/radiations/" + id, { method: "DELETE" });
+          await listarRadiaciones();
+        }
+      });
+    }
+
+    async function guardarRadiacion() {
+      if (!medidaActiva) {
+        alert("Selecciona una medición antes de crear radiaciones.");
+        return;
+      }
+      const basePoint = el("rad_base_point").value;
+      if (!basePoint) {
+        alert("Selecciona un punto base (estación).");
+        return;
+      }
+
+      const payload = {
+        label: el("rad_label").value || null,
+        distancia: parseFloat(el("rad_distancia").value || "0"),
+        inclinacion: parseFloat(el("rad_inclinacion").value || "0"),
+        azimut: parseFloat(el("rad_azimut").value || "0"),
+        base_point_id: Number(basePoint)
+      };
+
+      if (radEditingId) {
+        await fetch(API + "/radiations/" + radEditingId, {
+          method: "PUT",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(payload)
+        });
+        el("rad_msg").textContent = "Actualizado";
+      } else {
+        await fetch(API + "/radiations", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(payload)
+        });
+        el("rad_msg").textContent = "Creado";
+      }
+
+      resetRadiacion();
+      await listarRadiaciones();
+    }
+
+    function resetRadiacion() {
+      radEditingId = null;
+      ["rad_label","rad_distancia","rad_inclinacion","rad_azimut"].forEach(id => el(id).value = "");
+      el("rad_base_point").value = "";
+      el("rad_msg").textContent = "";
+    }
+
+    async function deleteRadiacion() {
+      if (!radEditingId) {
+        alert("Selecciona una radiación para eliminar.");
+        return;
+      }
+      if (confirm("¿Quieres eliminar la radiación " + radEditingId + "?")) {
+        await fetch(API + "/radiations/" + radEditingId, { method: "DELETE" });
+        resetRadiacion();
+        await listarRadiaciones();
+      }
     }
 
     async function guardarPunto() {
@@ -303,6 +503,7 @@
       }
       refresh();
       await listarPuntos();
+      await cargarPuntosBase();
     }
 
     function refresh() {
@@ -314,15 +515,25 @@
     // Botones y eventos que se van realizando a lo largo del programa
     el("save").onclick = guardarPunto;
     el("reset").onclick = refresh;
+
+    // Radiaciones
+    el("rad_save").onclick = guardarRadiacion;
+    el("rad_reset").onclick = resetRadiacion;
+    el("rad_prev").onclick = () => { if (radPage>1) { radPage--; listarRadiaciones(); } };
+    el("rad_next").onclick = () => { if (radPage < radLastPages) { radPage++; listarRadiaciones(); } };
+    const _radDelBtn = el("rad_delete"); if (_radDelBtn) _radDelBtn.onclick = deleteRadiacion;
+
     el("prev").onclick = () => { if (page>1) { page--; listarPuntos(); } };
-    el("next").onclick = () => { page++; listarPuntos(); };
+    el("next").onclick = () => { if (page < lastPages) { page++; listarPuntos(); } };
     el("deleteMedida").onclick = eliminarMedida;
     el("createMedida").onclick = crearMedida;
     el("refreshMedida").onclick = cargarMedidas;
-    el("measurement").onchange = async (e) => { medidaActiva = e.target.value || null; page=1; await listarPuntos(); };
+    el("measurement").onchange = async (e) => { medidaActiva = e.target.value || null; page=1; radPage=1; await listarPuntos(); await cargarPuntosBase(); await listarRadiaciones(); };
    
     await cargarMedidas();
     await listarPuntos();
+    await cargarPuntosBase();
+    await listarRadiaciones();
   </script>
 </body>
 </html>
