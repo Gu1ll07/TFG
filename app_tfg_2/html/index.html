@@ -131,11 +131,11 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>Etiqueta</th>
-          <th>Dist</th>
-          <th>Inc</th>
-          <th>Az</th>
-          <th>BasePoint</th>
+          <th>Etiqueta radiación</th>
+          <th>Distancia radiación</th>
+          <th>Inclinación radiación</th>
+          <th>Azimut radiación</th>
+          <th>Estación base</th>
           <th>Creado</th>
           <th class="right">Acciones</th>
         </tr>
@@ -147,7 +147,7 @@
   <!-- LISTADO DE UN RECORRIDO, POLIGONAL Y PUNTOS -->
   <div class="container" style="margin-top: var(--gap)">
     <div class="columna">
-      <h3 style="flex:1">LISTADO POLIGONAL Y TRAZAS</h3>
+      <h3 style="flex:1">LISTADO POLIGONAL</h3>
       <div class="columna" style="gap:6px">
         <button id="prev">Prev</button>
         <span id="paginaInfo" class="badge">—</span>
@@ -157,7 +157,6 @@
     <table>
       <thead>
         <tr>
-          <th>ID</th>
           <th>Etiqueta poligonal</th>
           <th>Distancia</th>
           <th>Inclinación</th>
@@ -279,7 +278,6 @@
       for (const p of data.items) {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${p.id}</td>
           <td>${p.label ?? ""}</td>
           <td>${fmt(p.distancia)}</td>
           <td>${fmt(p.inclinacion)}</td>

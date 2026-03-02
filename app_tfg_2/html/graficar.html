@@ -178,12 +178,12 @@
       return { X, Y, Z, hover, byPointId };
     }
 
-    function renderPlot(traj, title) {
+    function renderPlot(trayectoria, title) {
       const trace = {
         type: "scatter3d",
         mode: "lines+markers",
-        x: traj.X, y: traj.Y, z: traj.Z,
-        text: traj.hover,
+        x: trayectoria.X, y: trayectoria.Y, z: trayectoria.Z,
+        text: trayectoria.hover,
         hoverinfo: "text",
         name: "Recorrido"
       };
@@ -208,8 +208,8 @@
       if (!mid) { alert("Selecciona una medición."); return; }
 
       setQueryMeasurementId(mid);
-      el("status").textContent = "Cargando recorrido topográfico…";
-      el("emptyMsg").style.display = "none";
+      el("status").textContent = "Cargando recorrido topográfico......";
+      el("emptyMsg").style.display = "Nada";
 
       const points = await fetchAllPoints(mid);
       const radiations = await fetchAllRadiations(mid);
@@ -221,15 +221,15 @@
         return;
       }
 
-      const traj = buildTrayectoria(points);
-      const measName = sel.options[sel.selectedIndex]?.textContent ?? `Medición ${mid}`;
+      const trayectoria = buildTrayectoria(points);
+      const nombreMedida = sel.options[sel.selectedIndex]?.textContent ?? `Medición ${mid}`;
 
       // Radiaciones: calculamos coordenadas absolutas usando la estación (punto base) como origen
       const RX = [], RY = [], RZ = [], Rhover = [];
       const lineX = [], lineY = [], lineZ = [];
 
       for (const r of radiations) {
-        const base = traj.byPointId[r.base_point_id];
+        const base = trayectoria.byPointId[r.base_point_id];
         if (!base) continue;
 
         const d = Number(r.distancia || 0);
@@ -264,8 +264,8 @@
       const tracePol = {
         type: "scatter3d",
         mode: "lines+markers",
-        x: traj.X, y: traj.Y, z: traj.Z,
-        text: traj.hover,
+        x: trayectoria.X, y: trayectoria.Y, z: trayectoria.Z,
+        text: trayectoria.hover,
         hoverinfo: "text",
         name: "Poligonal"
       };
@@ -288,7 +288,7 @@
       };
 
       const layout = {
-        title: { text: `Recorrido 3D — ${measName} (${points.length} segmento/s, ${radiations.length} radiacion/es)` },
+        title: { text: `Recorrido 3D — ${nombreMedida} (${points.length} segmento/s, ${radiations.length} radiación/es)` },
         margin: { l: 0, r: 0, b: 0, t: 40 },
         scene: {
           xaxis: { title: "Eje X (Este)" },

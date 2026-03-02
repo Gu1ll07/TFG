@@ -13,16 +13,16 @@ engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-class MeasurementDB(Base):
-    __tablename__ = "measurements"
+class MedidaDB(Base):
+    __tablename__ = "medidas"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False, unique=True, index=True)
     description = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    points = relationship("PointDB", back_populates="measurement", cascade="all, delete-orphan")
+    points = relationship("PuntosDB", back_populates="medida", cascade="all, delete-orphan")
 
-class RadiationDB(Base):
-    __tablename__ = "radiations"
+class RadiacionDB(Base):
+    __tablename__ = "radiaciones"
     id = Column(Integer, primary_key=True, index=True)
     label = Column(String, index=True, nullable=True)
     distancia = Column(Float, nullable=False, default=0.0)
@@ -30,30 +30,30 @@ class RadiationDB(Base):
     azimut = Column(Float, nullable=False, default=0.0)
 
     base_point_id = Column(Integer, ForeignKey("points.id"), nullable=False, index=True)
-    measurement_id = Column(Integer, ForeignKey("measurements.id"), nullable=True, index=True)
+    medida_id = Column(Integer, ForeignKey("medidas.id"), nullable=True, index=True)
 
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
-    base_point = relationship("PointDB", back_populates="radiations")
+    base_point = relationship("PuntosDB", back_populates="radiaciones")
 
-class PointDB(Base):
+class PuntosDB(Base):
     __tablename__ = "points"
     id = Column(Integer, primary_key=True, index=True)
     label = Column(String, index=True, nullable=True)
     distancia = Column(Float, nullable=False, default=0.0)
     inclinacion = Column(Float, nullable=False, default=0.0)
     azimut = Column(Float, nullable=False, default=0.0)
-    measurement_id = Column(Integer, ForeignKey("measurements.id"), nullable=True, index=True)
+    medida_id = Column(Integer, ForeignKey("medidas.id"), nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    measurement = relationship("MeasurementDB", back_populates="points")
-    radiations = relationship("RadiationDB", back_populates="base_point", cascade="all, delete-orphan")
+    medida = relationship("MedidaDB", back_populates="points")
+    radiaciones = relationship("RadiacionDB", back_populates="base_point", cascade="all, delete-orphan")
 Base.metadata.create_all(bind=engine)
 
-class MeasurementIn(BaseModel):
+class MedidaIn(BaseModel):
     name: str = Field(..., min_length=1, max_length=120)
     description: Optional[str] = None
 
-class MeasurementOut(MeasurementIn):
+class MedidaOut(MedidaIn):
     id: int
     created_at: datetime
 
@@ -62,35 +62,35 @@ class PointIn(BaseModel):
     distancia: float = Field(ge=0)
     inclinacion: float = Field(ge=-90, le=90)
     azimut: float = Field(ge=0, lt=360)
-    measurement_id: Optional[int] = Field(None, description="ID de la medición")
+    medida_id: Optional[int] = Field(None, description="ID de la medición")
 
 class PointOut(PointIn):
     id: int
     created_at: datetime
 
-class RadiationIn(BaseModel):
+class RadacionIn(BaseModel):
     label: Optional[str] = Field(None)
     distancia: float = Field(ge=0)
     inclinacion: float = Field(ge=-90, le=90)
     azimut: float = Field(ge=0, lt=360)
     base_point_id: int
 
-class RadiationOut(RadiationIn):
+class RadacionOut(RadacionIn):
     id: int
-    measurement_id: Optional[int]
+    medida_id: Optional[int]
     created_at: datetime
 
-class PageRadiations(BaseModel):
+class Pageradiaciones(BaseModel):
     page: int
     pages: int
     total: int
-    items: List[RadiationOut]
+    items: List[RadacionOut]
 
 class PageMeas(BaseModel):
     page: int
     pages: int
     total: int
-    items: List[MeasurementOut]
+    items: List[MedidaOut]
 
 class PagePoints(BaseModel):
     page: int
@@ -105,153 +105,152 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, 
 def health():
     return {"status":"ok","ts": datetime.utcnow().isoformat()+"Z"}
 
-# Measurements
-@app.post("/measurements", response_model=MeasurementOut)
-def create_measurement(m: MeasurementIn = Body(...)):
+# EVENTOS GET, PUT, POST Y DELETE DE MEDIDAS. TAMBIÉN SE AÑADE EL LISTAR MEDIDAS
+@app.post("/medidas", response_model=MedidaOut)
+def create_medida(m: MedidaIn = Body(...)):
     with SessionLocal() as db:
-        exists = db.query(MeasurementDB).filter(MeasurementDB.name == m.name).first()
+        exists = db.query(MedidaDB).filter(MedidaDB.name == m.name).first()
         if exists: raise HTTPException(400, "Ya existe una medición con ese nombre")
-        obj = MeasurementDB(name=m.name, description=m.description)
+        obj = MedidaDB(name=m.name, description=m.description)
         db.add(obj); db.commit(); db.refresh(obj)
-        return MeasurementOut(id=obj.id, name=obj.name, description=obj.description, created_at=obj.created_at)
+        return MedidaOut(id=obj.id, name=obj.name, description=obj.description, created_at=obj.created_at)
 
-@app.get("/measurements/{mid}", response_model=MeasurementOut)
-def get_measurement(mid: int):
+@app.get("/medidas/{mid}", response_model=MedidaOut)
+def get_medida(mid: int):
     with SessionLocal() as db:
-        obj = db.get(MeasurementDB, mid)
-        if not obj: raise HTTPException(404, "Measurement not found")
-        return MeasurementOut(id=obj.id, name=obj.name, description=obj.description, created_at=obj.created_at)
+        obj = db.get(MedidaDB, mid)
+        if not obj: raise HTTPException(404, "medida not found")
+        return MedidaOut(id=obj.id, name=obj.name, description=obj.description, created_at=obj.created_at)
 
-@app.put("/measurements/{mid}", response_model=MeasurementOut)
-def update_measurement(mid: int, m: MeasurementIn = Body(...)):
+@app.put("/medidas/{mid}", response_model=MedidaOut)
+def update_medida(mid: int, m: MedidaIn = Body(...)):
     with SessionLocal() as db:
-        obj = db.get(MeasurementDB, mid)
-        if not obj: raise HTTPException(404, "Measurement not found")
+        obj = db.get(MedidaDB, mid)
+        if not obj: raise HTTPException(404, "medida not found")
         if m.name != obj.name:
-            dup = db.query(MeasurementDB).filter(MeasurementDB.name == m.name).first()
+            dup = db.query(MedidaDB).filter(MedidaDB.name == m.name).first()
             if dup: raise HTTPException(400, "Ya existe una medición con ese nombre")
         obj.name, obj.description = m.name, m.description
         db.commit(); db.refresh(obj)
-        return MeasurementOut(id=obj.id, name=obj.name, description=obj.description, created_at=obj.created_at)
+        return MedidaOut(id=obj.id, name=obj.name, description=obj.description, created_at=obj.created_at)
 
-@app.delete("/measurements/{mid}")
-def delete_measurement(mid: int):
+@app.delete("/medidas/{mid}")
+def delete_medida(mid: int):
     with SessionLocal() as db:
-        obj = db.get(MeasurementDB, mid)
-        if not obj: raise HTTPException(404, "Measurement not found")
+        obj = db.get(MedidaDB, mid)
+        if not obj: raise HTTPException(404, "medida not found")
         db.delete(obj); db.commit()
         return JSONResponse({"deleted": mid})
 
-@app.get("/measurements", response_model=PageMeas)
-def list_measurements(page: int = Query(1, ge=1), limit: int = Query(50, ge=1, le=200), q: Optional[str] = Query(None)):
+@app.get("/medidas", response_model=PageMeas)
+def list_medidas(page: int = Query(1, ge=1), limit: int = Query(50, ge=1, le=200), q: Optional[str] = Query(None)):
     with SessionLocal() as db:
-        query = db.query(MeasurementDB)
-        if q: query = query.filter(MeasurementDB.name.ilike(f"%{q}%"))
+        query = db.query(MedidaDB)
+        if q: query = query.filter(MedidaDB.name.ilike(f"%{q}%"))
         total = query.count()
         pages = max(1, math.ceil(total / limit))
-        items = query.order_by(MeasurementDB.id.desc()).offset((page - 1) * limit).limit(limit).all()
-        out = [MeasurementOut(id=o.id, name=o.name, description=o.description, created_at=o.created_at) for o in items]
+        items = query.order_by(MedidaDB.id.desc()).offset((page - 1) * limit).limit(limit).all()
+        out = [MedidaOut(id=o.id, name=o.name, description=o.description, created_at=o.created_at) for o in items]
         return PageMeas(page=page, pages=pages, total=total, items=out)
 
-# Points
+# EVENTOS GET, POST Y DELETE DE PUNTOS
 @app.post("/points", response_model=PointOut)
 def create_point(p: PointIn = Body(...)):
     with SessionLocal() as db:
-        if p.measurement_id is not None and not db.get(MeasurementDB, p.measurement_id):
-            raise HTTPException(400, "measurement_id no existe")
-        obj = PointDB(label=p.label, distancia=p.distancia, inclinacion=p.inclinacion, azimut=p.azimut, measurement_id=p.measurement_id)
+        if p.medida_id is not None and not db.get(MedidaDB, p.medida_id):
+            raise HTTPException(400, "medida_id no existe")
+        obj = PuntosDB(label=p.label, distancia=p.distancia, inclinacion=p.inclinacion, azimut=p.azimut, medida_id=p.medida_id)
         db.add(obj); db.commit(); db.refresh(obj)
-        return PointOut(id=obj.id, label=obj.label, distancia=obj.distancia, inclinacion=obj.inclinacion, azimut=obj.azimut, measurement_id=obj.measurement_id, created_at=obj.created_at)
+        return PointOut(id=obj.id, label=obj.label, distancia=obj.distancia, inclinacion=obj.inclinacion, azimut=obj.azimut, medida_id=obj.medida_id, created_at=obj.created_at)
 
 @app.get("/points/{pid}", response_model=PointOut)
 def get_point(pid: int):
     with SessionLocal() as db:
-        obj = db.get(PointDB, pid)
+        obj = db.get(PuntosDB, pid)
         if not obj: raise HTTPException(404, "Point not found")
-        return PointOut(id=obj.id, label=obj.label, distancia=obj.distancia, inclinacion=obj.inclinacion, azimut=obj.azimut, measurement_id=obj.measurement_id, created_at=obj.created_at)
+        return PointOut(id=obj.id, label=obj.label, distancia=obj.distancia, inclinacion=obj.inclinacion, azimut=obj.azimut, medida_id=obj.medida_id, created_at=obj.created_at)
 
 @app.put("/points/{pid}", response_model=PointOut)
 def update_point(pid: int, p: PointIn = Body(...)):
     with SessionLocal() as db:
-        obj = db.get(PointDB, pid)
+        obj = db.get(PuntosDB, pid)
         if not obj: raise HTTPException(404, "Point not found")
-        if p.measurement_id is not None and not db.get(MeasurementDB, p.measurement_id):
-            raise HTTPException(400, "measurement_id no existe")
+        if p.medida_id is not None and not db.get(MedidaDB, p.medida_id):
+            raise HTTPException(400, "medida_id no existe")
         obj.label = p.label 
         obj.distancia = p.distancia
         obj.inclinacion = p.inclinacion
         obj.azimut = p.azimut
-        obj.measurement_id = p.measurement_id
+        obj.medida_id = p.medida_id
         db.commit(); db.refresh(obj)
-        return PointOut(id=obj.id, label=obj.label, distancia=obj.distancia, inclinacion=obj.inclinacion, azimut=obj.azimut, measurement_id=obj.measurement_id, created_at=obj.created_at)
+        return PointOut(id=obj.id, label=obj.label, distancia=obj.distancia, inclinacion=obj.inclinacion, azimut=obj.azimut, medida_id=obj.medida_id, created_at=obj.created_at)
 
 @app.delete("/points/{pid}")
 def delete_point(pid: int):
     with SessionLocal() as db:
-        obj = db.get(PointDB, pid)
+        obj = db.get(PuntosDB, pid)
         if not obj: raise HTTPException(404, "Point not found")
         db.delete(obj)
         db.commit()
         return JSONResponse({"deleted": pid})
 
 @app.get("/points", response_model=PagePoints)
-def list_points(page: int = Query(1, ge=1), limit: int = Query(10, ge=1, le=100), q: Optional[str] = Query(None), measurement_id: Optional[int] = Query(None)):
+def list_points(page: int = Query(1, ge=1), limit: int = Query(10, ge=1, le=100), q: Optional[str] = Query(None), medida_id: Optional[int] = Query(None)):
     with SessionLocal() as db:
-        query = db.query(PointDB)
-        if q: query = query.filter(PointDB.label.ilike(f"%{q}%"))
-        if measurement_id is not None: query = query.filter(PointDB.measurement_id == measurement_id)
+        query = db.query(PuntosDB)
+        if q: query = query.filter(PuntosDB.label.ilike(f"%{q}%"))
+        if medida_id is not None: query = query.filter(PuntosDB.medida_id == medida_id)
         total = query.count()
         pages = max(1, math.ceil(total / limit))
-        items = query.order_by(PointDB.id.desc()).offset((page - 1) * limit).limit(limit).all()
-        out = [PointOut(id=o.id, label=o.label, distancia=o.distancia, inclinacion=o.inclinacion, azimut=o.azimut, measurement_id=o.measurement_id, created_at=o.created_at) for o in items]
+        items = query.order_by(PuntosDB.id.desc()).offset((page - 1) * limit).limit(limit).all()
+        out = [PointOut(id=o.id, label=o.label, distancia=o.distancia, inclinacion=o.inclinacion, azimut=o.azimut, medida_id=o.medida_id, created_at=o.created_at) for o in items]
         return PagePoints(page=page, pages=pages, total=total, items=out)
 
-@app.post("/radiations", response_model=RadiationOut)
-def create_radiation(r: RadiationIn = Body(...)):
+@app.post("/radiaciones", response_model=RadacionOut)
+def create_radacion(r: RadacionIn = Body(...)):
     with SessionLocal() as db:
-        bp = db.get(PointDB, r.base_point_id)
+        bp = db.get(PuntosDB, r.base_point_id)
         if not bp:
             raise HTTPException(400, "base_point_id no existe")
 
-        obj = RadiationDB(
+        obj = RadiacionDB(
             label=r.label,
             distancia=r.distancia,
             inclinacion=r.inclinacion,
             azimut=r.azimut,
             base_point_id=r.base_point_id,
-            measurement_id=bp.measurement_id
+            medida_id=bp.medida_id
         )
         db.add(obj); db.commit(); db.refresh(obj)
-        return RadiationOut(
+        return RadacionOut(
             id=obj.id, label=obj.label, distancia=obj.distancia,
             inclinacion=obj.inclinacion, azimut=obj.azimut,
-            base_point_id=obj.base_point_id, measurement_id=obj.measurement_id,
+            base_point_id=obj.base_point_id, medida_id=obj.medida_id,
             created_at=obj.created_at
         )
 
-
-
-@app.get("/radiations/{rid}", response_model=RadiationOut)
-def get_radiation(rid: int):
+# EVENTOS GET, POST Y DELETE DE RADIACIONES
+@app.get("/radiaciones/{rid}", response_model=RadacionOut)
+def get_radacion(rid: int):
     with SessionLocal() as db:
-        obj = db.get(RadiationDB, rid)
+        obj = db.get(RadiacionDB, rid)
         if not obj:
-            raise HTTPException(404, "Radiation not found")
-        return RadiationOut(
+            raise HTTPException(404, "radacion not found")
+        return RadacionOut(
             id=obj.id, label=obj.label, distancia=obj.distancia,
             inclinacion=obj.inclinacion, azimut=obj.azimut,
-            base_point_id=obj.base_point_id, measurement_id=obj.measurement_id,
+            base_point_id=obj.base_point_id, medida_id=obj.medida_id,
             created_at=obj.created_at
         )
 
-@app.put("/radiations/{rid}", response_model=RadiationOut)
-def update_radiation(rid: int, r: RadiationIn = Body(...)):
+@app.put("/radiaciones/{rid}", response_model=RadacionOut)
+def update_radacion(rid: int, r: RadacionIn = Body(...)):
     with SessionLocal() as db:
-        obj = db.get(RadiationDB, rid)
+        obj = db.get(RadiacionDB, rid)
         if not obj:
-            raise HTTPException(404, "Radiation not found")
+            raise HTTPException(404, "radacion not found")
 
-        bp = db.get(PointDB, r.base_point_id)
+        bp = db.get(PuntosDB, r.base_point_id)
         if not bp:
             raise HTTPException(400, "base_point_id no existe")
 
@@ -260,53 +259,53 @@ def update_radiation(rid: int, r: RadiationIn = Body(...)):
         obj.inclinacion = r.inclinacion
         obj.azimut = r.azimut
         obj.base_point_id = r.base_point_id
-        obj.measurement_id = bp.measurement_id
+        obj.medida_id = bp.medida_id
 
         db.commit(); db.refresh(obj)
-        return RadiationOut(
+        return RadacionOut(
             id=obj.id, label=obj.label, distancia=obj.distancia,
             inclinacion=obj.inclinacion, azimut=obj.azimut,
-            base_point_id=obj.base_point_id, measurement_id=obj.measurement_id,
+            base_point_id=obj.base_point_id, medida_id=obj.medida_id,
             created_at=obj.created_at
         )
 
-@app.get("/radiations", response_model=PageRadiations)
-def list_radiations(
+@app.get("/radiaciones", response_model=Pageradiaciones)
+def list_radiaciones(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
     q: Optional[str] = Query(None),
-    measurement_id: Optional[int] = Query(None),
+    medida_id: Optional[int] = Query(None),
     base_point_id: Optional[int] = Query(None),
 ):
     with SessionLocal() as db:
-        query = db.query(RadiationDB)
+        query = db.query(RadiacionDB)
         if q:
-            query = query.filter(RadiationDB.label.ilike(f"%{q}%"))
-        if measurement_id is not None:
-            query = query.filter(RadiationDB.measurement_id == measurement_id)
+            query = query.filter(RadiacionDB.label.ilike(f"%{q}%"))
+        if medida_id is not None:
+            query = query.filter(RadiacionDB.medida_id == medida_id)
         if base_point_id is not None:
-            query = query.filter(RadiationDB.base_point_id == base_point_id)
+            query = query.filter(RadiacionDB.base_point_id == base_point_id)
 
         total = query.count()
         pages = max(1, math.ceil(total / limit))
-        items = query.order_by(RadiationDB.id.desc()).offset((page-1)*limit).limit(limit).all()
+        items = query.order_by(RadiacionDB.id.desc()).offset((page-1)*limit).limit(limit).all()
 
         out = [
-            RadiationOut(
+            RadacionOut(
                 id=o.id, label=o.label, distancia=o.distancia,
                 inclinacion=o.inclinacion, azimut=o.azimut,
-                base_point_id=o.base_point_id, measurement_id=o.measurement_id,
+                base_point_id=o.base_point_id, medida_id=o.medida_id,
                 created_at=o.created_at
             ) for o in items
         ]
-        return PageRadiations(page=page, pages=pages, total=total, items=out)
+        return Pageradiaciones(page=page, pages=pages, total=total, items=out)
 
-@app.delete("/radiations/{rid}")
-def delete_radiation(rid: int):
+@app.delete("/radiaciones/{rid}")
+def delete_radacion(rid: int):
     with SessionLocal() as db:
-        obj = db.get(RadiationDB, rid)
+        obj = db.get(RadiacionDB, rid)
         if not obj:
-            raise HTTPException(404, "Radiation not found")
+            raise HTTPException(404, "radacion not found")
         db.delete(obj)
         db.commit()
         return JSONResponse({"deleted": rid})
