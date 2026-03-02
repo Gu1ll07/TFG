@@ -170,8 +170,8 @@
         byPointId[p.id] = { x, y, z, label };
         hover.push(
           `${label}<br>` +
-          `x=${x.toFixed(3)}<br>y=${y.toFixed(3)}<br>z=${z.toFixed(3)}<br>` +
-          `dist=${d.toFixed(3)} | az=${Number(p.azimut).toFixed(2)}° | inc=${Number(p.inclinacion).toFixed(2)}°`
+          `Coordenada x = ${x.toFixed(3)}<br>Coordenada y = ${y.toFixed(3)}<br>Coordenada z = ${z.toFixed(3)}<br>` +
+          `Distancia = ${d.toFixed(3)} | Azimut = ${Number(p.azimut).toFixed(2)}° | Inclinación = ${Number(p.inclinacion).toFixed(2)}°`
         );
       });
 
@@ -192,9 +192,9 @@
         title: { text: title },
         margin: { l: 0, r: 0, b: 0, t: 40 },
         scene: {
-          xaxis: { title: "X (Este)" },
-          yaxis: { title: "Y (Norte)" },
-          zaxis: { title: "Z (Arriba)" },
+          xaxis: { title: "Eje X (Este)" },
+          yaxis: { title: "Eje Y (Norte)" },
+          zaxis: { title: "Eje Z (Arriba)" },
           aspectmode: "data"
         }
       };
@@ -250,9 +250,9 @@
         const label = r.label ? String(r.label) : `R${r.id}`;
         Rhover.push(
           `${label}<br>` +
-          `base=${base.label} (id ${r.base_point_id})<br>` +
-          `x=${x.toFixed(3)}<br>y=${y.toFixed(3)}<br>z=${z.toFixed(3)}<br>` +
-          `dist=${d.toFixed(3)} | az=${Number(r.azimut).toFixed(2)}° | inc=${Number(r.inclinacion).toFixed(2)}°`
+          `Estación base = ${base.label} (id ${r.base_point_id})<br>` +
+          `Coordenada x = ${x.toFixed(3)}<br>Coordenada y = ${y.toFixed(3)}<br>Coordenada z = ${z.toFixed(3)}<br>` +
+          `Distancia = ${d.toFixed(3)} | Azimut = ${Number(r.azimut).toFixed(2)}° | Inclinación = ${Number(r.inclinacion).toFixed(2)}°`
         );
 
         // Línea estación -> radiación (separamos segmentos con null)
@@ -288,12 +288,12 @@
       };
 
       const layout = {
-        title: { text: `Recorrido 3D — ${measName} (${points.length} segmentos, ${radiations.length} radiaciones)` },
+        title: { text: `Recorrido 3D — ${measName} (${points.length} segmento/s, ${radiations.length} radiacion/es)` },
         margin: { l: 0, r: 0, b: 0, t: 40 },
         scene: {
-          xaxis: { title: "X (Este)" },
-          yaxis: { title: "Y (Norte)" },
-          zaxis: { title: "Z (Arriba)" },
+          xaxis: { title: "Eje X (Este)" },
+          yaxis: { title: "Eje Y (Norte)" },
+          zaxis: { title: "Eje Z (Arriba)" },
           aspectmode: "data"
         }
       };
