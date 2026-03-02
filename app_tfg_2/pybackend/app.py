@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 import io, csv, math
 
-DB_URL = "sqlite:///./points.db"
+DB_URL = "sqlite:///./puntos.db"
 engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
@@ -19,7 +19,7 @@ class MedidaDB(Base):
     name = Column(String, nullable=False, unique=True, index=True)
     description = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    points = relationship("PuntosDB", back_populates="medida", cascade="all, delete-orphan")
+    puntos = relationship("PuntosDB", back_populates="medida", cascade="all, delete-orphan")
 
 class RadiacionDB(Base):
     __tablename__ = "radiaciones"
@@ -29,7 +29,7 @@ class RadiacionDB(Base):
     inclinacion = Column(Float, nullable=False, default=0.0)
     azimut = Column(Float, nullable=False, default=0.0)
 
-    base_point_id = Column(Integer, ForeignKey("points.id"), nullable=False, index=True)
+    base_point_id = Column(Integer, ForeignKey("puntos.id"), nullable=False, index=True)
     medida_id = Column(Integer, ForeignKey("medidas.id"), nullable=True, index=True)
 
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
@@ -37,7 +37,7 @@ class RadiacionDB(Base):
     base_point = relationship("PuntosDB", back_populates="radiaciones")
 
 class PuntosDB(Base):
-    __tablename__ = "points"
+    __tablename__ = "puntos"
     id = Column(Integer, primary_key=True, index=True)
     label = Column(String, index=True, nullable=True)
     distancia = Column(Float, nullable=False, default=0.0)
@@ -45,7 +45,7 @@ class PuntosDB(Base):
     azimut = Column(Float, nullable=False, default=0.0)
     medida_id = Column(Integer, ForeignKey("medidas.id"), nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    medida = relationship("MedidaDB", back_populates="points")
+    medida = relationship("MedidaDB", back_populates="puntos")
     radiaciones = relationship("RadiacionDB", back_populates="base_point", cascade="all, delete-orphan")
 Base.metadata.create_all(bind=engine)
 
@@ -92,7 +92,7 @@ class PageMeas(BaseModel):
     total: int
     items: List[MedidaOut]
 
-class PagePoints(BaseModel):
+class Pagepuntos(BaseModel):
     page: int
     pages: int
     total: int
@@ -154,7 +154,7 @@ def list_medidas(page: int = Query(1, ge=1), limit: int = Query(50, ge=1, le=200
         return PageMeas(page=page, pages=pages, total=total, items=out)
 
 # EVENTOS GET, POST Y DELETE DE PUNTOS
-@app.post("/points", response_model=PointOut)
+@app.post("/puntos", response_model=PointOut)
 def create_point(p: PointIn = Body(...)):
     with SessionLocal() as db:
         if p.medida_id is not None and not db.get(MedidaDB, p.medida_id):
@@ -163,14 +163,14 @@ def create_point(p: PointIn = Body(...)):
         db.add(obj); db.commit(); db.refresh(obj)
         return PointOut(id=obj.id, label=obj.label, distancia=obj.distancia, inclinacion=obj.inclinacion, azimut=obj.azimut, medida_id=obj.medida_id, created_at=obj.created_at)
 
-@app.get("/points/{pid}", response_model=PointOut)
+@app.get("/puntos/{pid}", response_model=PointOut)
 def get_point(pid: int):
     with SessionLocal() as db:
         obj = db.get(PuntosDB, pid)
         if not obj: raise HTTPException(404, "Point not found")
         return PointOut(id=obj.id, label=obj.label, distancia=obj.distancia, inclinacion=obj.inclinacion, azimut=obj.azimut, medida_id=obj.medida_id, created_at=obj.created_at)
 
-@app.put("/points/{pid}", response_model=PointOut)
+@app.put("/puntos/{pid}", response_model=PointOut)
 def update_point(pid: int, p: PointIn = Body(...)):
     with SessionLocal() as db:
         obj = db.get(PuntosDB, pid)
@@ -185,7 +185,7 @@ def update_point(pid: int, p: PointIn = Body(...)):
         db.commit(); db.refresh(obj)
         return PointOut(id=obj.id, label=obj.label, distancia=obj.distancia, inclinacion=obj.inclinacion, azimut=obj.azimut, medida_id=obj.medida_id, created_at=obj.created_at)
 
-@app.delete("/points/{pid}")
+@app.delete("/puntos/{pid}")
 def delete_point(pid: int):
     with SessionLocal() as db:
         obj = db.get(PuntosDB, pid)
@@ -194,8 +194,8 @@ def delete_point(pid: int):
         db.commit()
         return JSONResponse({"deleted": pid})
 
-@app.get("/points", response_model=PagePoints)
-def list_points(page: int = Query(1, ge=1), limit: int = Query(10, ge=1, le=100), q: Optional[str] = Query(None), medida_id: Optional[int] = Query(None)):
+@app.get("/puntos", response_model=Pagepuntos)
+def list_puntos(page: int = Query(1, ge=1), limit: int = Query(10, ge=1, le=100), q: Optional[str] = Query(None), medida_id: Optional[int] = Query(None)):
     with SessionLocal() as db:
         query = db.query(PuntosDB)
         if q: query = query.filter(PuntosDB.label.ilike(f"%{q}%"))
@@ -204,7 +204,7 @@ def list_points(page: int = Query(1, ge=1), limit: int = Query(10, ge=1, le=100)
         pages = max(1, math.ceil(total / limit))
         items = query.order_by(PuntosDB.id.desc()).offset((page - 1) * limit).limit(limit).all()
         out = [PointOut(id=o.id, label=o.label, distancia=o.distancia, inclinacion=o.inclinacion, azimut=o.azimut, medida_id=o.medida_id, created_at=o.created_at) for o in items]
-        return PagePoints(page=page, pages=pages, total=total, items=out)
+        return Pagepuntos(page=page, pages=pages, total=total, items=out)
 
 @app.post("/radiaciones", response_model=RadacionOut)
 def create_radacion(r: RadacionIn = Body(...)):

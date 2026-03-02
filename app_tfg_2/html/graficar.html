@@ -40,7 +40,7 @@
     <h3>GRAFICAR POLIGONAL (3D)</h3>
     <div class="row">
       <label>Medición
-        <select id="measurement"></select>
+        <select id="medida"></select>
       </label>
       <button id="btnGraficar" style="margin-top:5px">Graficar</button>
       <span id="status" class="badge"></span>
@@ -58,23 +58,23 @@
 
     function deg2rad(d) { return d * Math.PI / 180.0; }
 
-    function getQueryMeasurementId() {
+    function getQueryMedidaId() {
       const url = new URL(window.location.href);
-      const mid = url.searchParams.get("measurement_id");
+      const mid = url.searchParams.get("medida_id");
       return mid ? Number(mid) : null;
     }
 
-    function setQueryMeasurementId(mid) {
+    function setQueryMedidaId(mid) {
       const url = new URL(window.location.href);
-      url.searchParams.set("measurement_id", String(mid));
+      url.searchParams.set("medida_id", String(mid));
       window.history.replaceState({}, "", url);
     }
 
     async function cargarMedidas() {
-      const res = await fetch(API + "/measurements?page=1&limit=200");
+      const res = await fetch(API + "/medidas?page=1&limit=200");
       const data = await res.json();
 
-      const sel = el("measurement");
+      const sel = el("medida");
       sel.innerHTML = "";
 
       const optNone = document.createElement("option");
@@ -88,20 +88,20 @@
         sel.appendChild(opt);
       }
 
-      const mid = getQueryMeasurementId();
+      const mid = getQueryMedidaId();
       if (mid && data.items.some(m => m.id === mid)) sel.value = String(mid);
     }
 
-    async function fetchAllPoints(measurementId) {
+    async function fetchAllPuntos(medidaId) {
       const limit = 100;
       let page = 1;
       let all = [];
 
       while (true) {
-        const url = new URL(API + "/points");
+        const url = new URL(API + "/puntos");
         url.searchParams.set("page", page);
         url.searchParams.set("limit", limit);
-        url.searchParams.set("measurement_id", measurementId);
+        url.searchParams.set("medida_id", medidaId);
 
         const res = await fetch(url.toString());
         if (!res.ok) return [];
@@ -118,16 +118,16 @@
     }
 
 
-    async function fetchAllRadiations(measurementId) {
+    async function fetchAllRadiations(medidaId) {
       const limit = 100;
       let page = 1;
       let all = [];
 
       while (true) {
-        const url = new URL(API + "/radiations");
+        const url = new URL(API + "/radiaciones");
         url.searchParams.set("page", page);
         url.searchParams.set("limit", limit);
-        url.searchParams.set("measurement_id", measurementId);
+        url.searchParams.set("medida_id", medidaId);
 
         const res = await fetch(url.toString());
 
@@ -203,15 +203,15 @@
     }
 
     async function graficar() {
-      const sel = el("measurement");
+      const sel = el("medida");
       const mid = sel.value ? Number(sel.value) : null;
       if (!mid) { alert("Selecciona una medición."); return; }
 
-      setQueryMeasurementId(mid);
+      setQueryMedidaId(mid);
       el("status").textContent = "Cargando recorrido topográfico......";
       el("emptyMsg").style.display = "Nada";
 
-      const points = await fetchAllPoints(mid);
+      const points = await fetchAllPuntos(mid);
       const radiations = await fetchAllRadiations(mid);
 
       if (!points.length) {
@@ -306,7 +306,7 @@
     el("btnGraficar").onclick = graficar;
 
     await cargarMedidas();
-    if (getQueryMeasurementId()) await graficar();
+    if (getQueryMedidaId()) await graficar();
   </script>
 </body>
 </html>
