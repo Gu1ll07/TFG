@@ -13,24 +13,24 @@
     :root { --gap:10px; --color-primary:#1F3A5F; --color-primary-dark:#0B1F44; --color-bg-full:#f3d5bc; --color-bg-container:#FFFFFF; --color-bg-soft:#E6EEFF; --color-text-main:#1F3A5F; --color-text-hide:#817c7c; --color-border:#E5E7EB; --color-danger:#EF4444; }
     body { background-color:var(--color-bg-full); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin:24px; color:var(--color-text-main); }
     .container { background:var(--color-bg-container); border:1px solid var(--color-border); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
-    .row { display:flex; gap:var(--gap); align-items:center; flex-wrap:wrap; }
+    .columna { display:flex; gap:var(--gap); align-items:center; flex-wrap:wrap; }
     .hide { color:var(--color-text-hide); font-size:.9rem; }
     label { display:block; margin-top:6px; font-weight:600; color:var(--color-primary-dark); }
     select { padding:10px; border-radius:8px; border:1px solid var(--color-border); background:#fff; color:var(--color-text-main); min-width:260px; }
     select:focus { outline:none; border-color:var(--color-primary); }
     button { padding:10px; border-radius:8px; border:none; cursor:pointer; background:var(--color-primary); color:#fff; font-weight:600; }
     button:hover { background:#2E5077; }
-    .badge { font-size:12px; background:var(--color-bg-soft); color:var(--color-primary); border-radius:8px; padding:2px 8px; font-weight:600; }
+    .graf { font-size:12px; background:var(--color-bg-soft); color:var(--color-primary); border-radius:8px; padding:2px 8px; font-weight:600; }
     #plot { width: 100%; height: 70vh; min-height: 420px; }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: .9rem; }
   </style>
 </head>
 <body>
 
-  <!--Nombre y botones de navegación-->
+<!--Nombre y botones de navegación-->
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
     <h1 style="font-size: 45px;"><strong>TopoSoft</strong></h1>
-    <nav class="row">
+    <nav class="columna">
       <button><a style="color: #FFFFFF; text-decoration:none;" href="index.html"><strong>Back</strong></a></button>
       <button><a style="color: #FFFFFF; text-decoration:none;" href="ayuda.html"><strong>Help!</strong></a></button>
     </nav>
@@ -38,18 +38,18 @@
 
   <div class="container">
     <h3>GRAFICAR POLIGONAL (3D)</h3>
-    <div class="row">
+    <div class="columna">
       <label>Medición
         <select id="medida"></select>
       </label>
       <button id="btnGraficar" style="margin-top:5px">Graficar</button>
-      <span id="status" class="badge"></span>
+      <span id="status" class="graf"></span>
     </div>
   </div>
 
   <div class="container" style="margin-top: var(--gap)">
     <div id="plot"></div>
-    <p id="emptyMsg" class="hide" style="display:none;">La medición no tiene puntos.</p>
+    <p id="emptyMensaje" class="hide" style="display:none;">La medición no tiene puntos.</p>
   </div>
 
   <script type="module">
@@ -88,11 +88,11 @@
         sel.appendChild(opt);
       }
 
-      const mid = getQueryMedidaId();
+      const mid = getMedidaById();
       if (mid && data.items.some(m => m.id === mid)) sel.value = String(mid);
     }
 
-    async function fetchAllPuntos(medidaId) {
+    async function loadAllPuntos(medidaId) {
       const limit = 100;
       let page = 1;
       let all = [];
@@ -118,7 +118,7 @@
     }
 
 
-    async function fetchAllRadiations(medidaId) {
+    async function loadAllRadiaciones(medidaId) {
       const limit = 100;
       let page = 1;
       let all = [];
@@ -145,7 +145,7 @@
       return all;
     }
 
-    function buildTrayectoria(points) {
+    function buildRecorrido(points) {
       let x = 0, y = 0, z = 0;
       const byPointId = {}; // point.id -> coordenadas del vértice tras aplicar el tramo
 
@@ -178,7 +178,7 @@
       return { X, Y, Z, hover, byPointId };
     }
 
-    function renderPlot(trayectoria, title) {
+    function drawPlot(trayectoria, title) {
       const trace = {
         type: "scatter3d",
         mode: "lines+markers",
@@ -209,19 +209,19 @@
 
       setQueryMedidaId(mid);
       el("status").textContent = "Cargando recorrido topográfico......";
-      el("emptyMsg").style.display = "Nada";
+      el("emptyMensaje").style.display = "Nada";
 
-      const points = await fetchAllPuntos(mid);
-      const radiations = await fetchAllRadiations(mid);
+      const points = await loadAllPuntos(mid);
+      const radiations = await loadAllRadiaciones(mid);
 
       if (!points.length) {
         Plotly.purge("plot");
         el("status").textContent = "0 puntos";
-        el("emptyMsg").style.display = "block";
+        el("emptyMensaje").style.display = "block";
         return;
       }
 
-      const trayectoria = buildTrayectoria(points);
+      const trayectoria = buildRecorrido(points);
       const nombreMedida = sel.options[sel.selectedIndex]?.textContent ?? `Medición ${mid}`;
 
       // Radiaciones: calculamos coordenadas absolutas usando la estación (punto base) como origen

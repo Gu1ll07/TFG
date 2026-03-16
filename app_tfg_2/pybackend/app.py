@@ -80,19 +80,19 @@ class RadacionOut(RadacionIn):
     medida_id: Optional[int]
     created_at: datetime
 
-class Pageradiaciones(BaseModel):
+class PageRadiaciones(BaseModel):
     page: int
     pages: int
     total: int
     items: List[RadacionOut]
 
-class PageMeas(BaseModel):
+class PageMedidas(BaseModel):
     page: int
     pages: int
     total: int
     items: List[MedidaOut]
 
-class Pagepuntos(BaseModel):
+class PagePuntos(BaseModel):
     page: int
     pages: int
     total: int
@@ -142,7 +142,7 @@ def delete_medida(mid: int):
         db.delete(obj); db.commit()
         return JSONResponse({"deleted": mid})
 
-@app.get("/medidas", response_model=PageMeas)
+@app.get("/medidas", response_model=PageMedidas)
 def list_medidas(page: int = Query(1, ge=1), limit: int = Query(50, ge=1, le=200), q: Optional[str] = Query(None)):
     with SessionLocal() as db:
         query = db.query(MedidaDB)
@@ -151,7 +151,7 @@ def list_medidas(page: int = Query(1, ge=1), limit: int = Query(50, ge=1, le=200
         pages = max(1, math.ceil(total / limit))
         items = query.order_by(MedidaDB.id.desc()).offset((page - 1) * limit).limit(limit).all()
         out = [MedidaOut(id=o.id, name=o.name, description=o.description, created_at=o.created_at) for o in items]
-        return PageMeas(page=page, pages=pages, total=total, items=out)
+        return PageMedidas(page=page, pages=pages, total=total, items=out)
 
 # EVENTOS GET, POST Y DELETE DE PUNTOS
 @app.post("/puntos", response_model=PointOut)
@@ -194,7 +194,7 @@ def delete_point(pid: int):
         db.commit()
         return JSONResponse({"deleted": pid})
 
-@app.get("/puntos", response_model=Pagepuntos)
+@app.get("/puntos", response_model=PagePuntos)
 def list_puntos(page: int = Query(1, ge=1), limit: int = Query(10, ge=1, le=100), q: Optional[str] = Query(None), medida_id: Optional[int] = Query(None)):
     with SessionLocal() as db:
         query = db.query(PuntosDB)
@@ -204,7 +204,7 @@ def list_puntos(page: int = Query(1, ge=1), limit: int = Query(10, ge=1, le=100)
         pages = max(1, math.ceil(total / limit))
         items = query.order_by(PuntosDB.id.desc()).offset((page - 1) * limit).limit(limit).all()
         out = [PointOut(id=o.id, label=o.label, distancia=o.distancia, inclinacion=o.inclinacion, azimut=o.azimut, medida_id=o.medida_id, created_at=o.created_at) for o in items]
-        return Pagepuntos(page=page, pages=pages, total=total, items=out)
+        return PagePuntos(page=page, pages=pages, total=total, items=out)
 
 @app.post("/radiaciones", response_model=RadacionOut)
 def create_radacion(r: RadacionIn = Body(...)):
@@ -269,7 +269,7 @@ def update_radacion(rid: int, r: RadacionIn = Body(...)):
             created_at=obj.created_at
         )
 
-@app.get("/radiaciones", response_model=Pageradiaciones)
+@app.get("/radiaciones", response_model=PageRadiaciones)
 def list_radiaciones(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
@@ -298,7 +298,7 @@ def list_radiaciones(
                 created_at=o.created_at
             ) for o in items
         ]
-        return Pageradiaciones(page=page, pages=pages, total=total, items=out)
+        return PageRadiaciones(page=page, pages=pages, total=total, items=out)
 
 @app.delete("/radiaciones/{rid}")
 def delete_radacion(rid: int):

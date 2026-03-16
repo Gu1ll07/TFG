@@ -56,7 +56,7 @@
       <p id="measMsg" class="hide">Selecciona una medicion, crea una nueva o elimina una existente.</p>
     </div>
 
-    <!-- CREAR Y EDITAR PUNTOS -->
+<!-- CREAR Y EDITAR PUNTOS -->
     <div class="container">
       <h3> AÑADIR O EDITAR PUNTO DE LA POLIGONAL</h3>
       <div class="columna">
@@ -84,28 +84,28 @@
     </div>
   </div>
 
-<!-- AÑADIR RADIACIONES A UN PUNTO DE LA POLIGONAL-->
+<!-- AÑADIR RADIACIONES A UN PUNTO BASE PERTENECIENTE A LA POLIGONAL-->
   <div class="container" style="margin-top: var(--gap)">
     <h3>AÑADIR RADIACIÓN A UN PUNTO DE LA POLIGONAL</h3>
 
     <div class="columna">
       <label style="flex:1">Estación (punto base)
-        <select id="rad_base_point" style="width:100%"></select>
+        <select id="estacionBase_radiacion" style="width:100%"></select>
       </label>
       <label style="flex:1">Etiqueta radiación
-        <input id="rad_label" type ="number" placeholder="p.ej. P-001" />
+        <input id="label_radiacion" type ="number" placeholder="p.ej. P-001" />
       </label>
     </div>
 
     <div class="columna">
       <label style="flex:1">Distancia radiación
-        <input id="rad_distancia" type="number" step="any" placeholder="0.0"/>
+        <input id="distancia_radiacion" type="number" step="any" placeholder="0.0"/>
       </label>
       <label style="flex:1">Inclinación radiación
-        <input id="rad_inclinacion" type="number" step="any" placeholder="0.0"/>
+        <input id="inclinacion_radiacion" type="number" step="any" placeholder="0.0"/>
       </label>
       <label style="flex:1">Azimut radiación
-        <input id="rad_azimut" type="number" step="any" placeholder="0.0"/>
+        <input id="azimut_radiacion" type="number" step="any" placeholder="0.0"/>
       </label>
     </div>
 
@@ -113,11 +113,11 @@
     <div class="columna">
       <button id="rad_save">Guardar radiación</button>
       <button id="rad_reset">Reset</button>
-      <span id="rad_msg" class="badge"></span>
+      <span id="mensaje_radiacion" class="badge"></span>
     </div>
   </div>
 
-  <!-- LISTADO DE RADIACIONES -->
+<!-- LISTADO DE RADIACIONES -->
   <div class="container" style="margin-top: var(--gap)">
     <div class="columna">
       <h3 style="flex:1">LISTADO RADIACIONES</h3>
@@ -144,7 +144,7 @@
     </table>
   </div>
 
-  <!-- LISTADO DE UN RECORRIDO, POLIGONAL Y PUNTOS -->
+  <!-- LISTADO DE LOS PUNTOS DE LA POLIGONAL Y SU INFORMACIÓN -->
   <div class="container" style="margin-top: var(--gap)">
     <div class="columna">
       <h3 style="flex:1">LISTADO POLIGONAL</h3>
@@ -317,7 +317,7 @@
     }
 
     async function cargarPuntosBase() {
-      const sel = el("rad_base_point");
+      const sel = el("estacionBase_radiacion");
       sel.innerHTML = "";
 
       const optNone = document.createElement("option");
@@ -396,13 +396,13 @@
         const r = await res.json();
         radEditingId = r.id;
 
-        el("rad_label").value = r.label ?? "";
-        el("rad_distancia").value = r.distancia;
-        el("rad_inclinacion").value = r.inclinacion;
-        el("rad_azimut").value = r.azimut;
-        el("rad_base_point").value = String(r.base_point_id);
+        el("label_radiacion").value = r.label ?? "";
+        el("distancia_radiacion").value = r.distancia;
+        el("inclinacion_radiacion").value = r.inclinacion;
+        el("azimut_radiacion").value = r.azimut;
+        el("estacionBase_radiacion").value = String(r.base_point_id);
 
-        el("rad_msg").textContent = "Editando ID " + r.id;
+        el("mensaje_radiacion").textContent = "Editando ID " + r.id;
       });
 
       tbody.querySelectorAll(".rad_delete").forEach(b => b.onclick = async (e) => {
@@ -419,17 +419,17 @@
         alert("Selecciona una medición antes de crear radiaciones.");
         return;
       }
-      const basePoint = el("rad_base_point").value;
+      const basePoint = el("estacionBase_radiacion").value;
       if (!basePoint) {
         alert("Selecciona un punto base (estación).");
         return;
       }
 
       const payload = {
-        label: el("rad_label").value || null,
-        distancia: parseFloat(el("rad_distancia").value || "0"),
-        inclinacion: parseFloat(el("rad_inclinacion").value || "0"),
-        azimut: parseFloat(el("rad_azimut").value || "0"),
+        label: el("label_radiacion").value || null,
+        distancia: parseFloat(el("distancia_radiacion").value || "0"),
+        inclinacion: parseFloat(el("inclinacion_radiacion").value || "0"),
+        azimut: parseFloat(el("azimut_radiacion").value || "0"),
         base_point_id: Number(basePoint)
       };
 
@@ -439,14 +439,14 @@
           headers: {"Content-Type":"application/json"},
           body: JSON.stringify(payload)
         });
-        el("rad_msg").textContent = "Actualizado";
+        el("mensaje_radiacion").textContent = "Actualizado";
       } else {
         await fetch(API + "/radiaciones", {
           method: "POST",
           headers: {"Content-Type":"application/json"},
           body: JSON.stringify(payload)
         });
-        el("rad_msg").textContent = "Creado";
+        el("mensaje_radiacion").textContent = "Creado";
       }
 
       resetRadiacion();
@@ -455,9 +455,9 @@
 
     function resetRadiacion() {
       radEditingId = null;
-      ["rad_label","rad_distancia","rad_inclinacion","rad_azimut"].forEach(id => el(id).value = "");
-      el("rad_base_point").value = "";
-      el("rad_msg").textContent = "";
+      ["label_radiacion","distancia_radiacion","inclinacion_radiacion","azimut_radiacion"].forEach(id => el(id).value = "");
+      el("estacionBase_radiacion").value = "";
+      el("mensaje_radiacion").textContent = "";
     }
 
     async function deleteRadiacion() {
