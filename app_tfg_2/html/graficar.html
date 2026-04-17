@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TopoSoft — Graficar</title>
 
-  <!-- Plotly (CDN) -->
+  <!-- PLOTLY MEDIANTE CDN -->
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 
   <style>
@@ -88,7 +88,7 @@
         sel.appendChild(opt);
       }
 
-      const mid = getMedidaById();
+      const mid = getQueryMedidaById();
       if (mid && data.items.some(m => m.id === mid)) sel.value = String(mid);
     }
 

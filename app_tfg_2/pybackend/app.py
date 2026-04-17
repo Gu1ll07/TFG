@@ -6,9 +6,14 @@ from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime, 
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
+from pathlib import Path
 import io, csv, math
 
-DB_URL = "sqlite:///./puntos.db"
+
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / "puntos.db"
+DB_URL = f"sqlite:///{DB_PATH.as_posix()}"
+
 engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
@@ -312,4 +317,4 @@ def delete_radacion(rid: int):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=False)
+    uvicorn.run(app, host="127.0.0.1", port=8000, reload=False)

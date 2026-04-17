@@ -5,9 +5,35 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-    "start": "electron ."
+    "start": "node start.js",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder"
   },
   "devDependencies": {
-    "electron": "^40.6.0"
+    "electron": "^40.6.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "com.toposoft.app",
+    "productName": "TopoSoft",
+    "files": [
+      "main.js",
+      "html/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "pybackend/dist/backend",
+        "to": "backend"
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
