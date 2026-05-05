@@ -13,9 +13,12 @@ This repository contains the software developed as part of my Final Degree Proje
 - [About](#-about)
 - [Projects Included](#-projects-included)
 - [Technologies Used](#-technologies-used)
+- [Repository Structure](#-repository-structure)
 - [How to Start APP TFG 1](#-how-to-start-app-tfg-1)
 - [How to Start APP TFG 2 — TopoSoft](#-how-to-start-app-tfg-2--toposoft)
+- [Main Features](#-main-features)
 - [Documentation](#-documentation)
+- [Project Status](#-project-status)
 - [Contact](#%EF%B8%8F-contact)
 
 ---
@@ -68,7 +71,7 @@ Main features:
 
 ## 🛠️ Technologies Used
 
-The repository combines several technologies depending on each application:
+The repository combines several technologies depending on each application.
 
 ### APP TFG 1
 
@@ -76,7 +79,8 @@ The repository combines several technologies depending on each application:
 - Sensor-based data acquisition
 - Python
 - Serial communication
-- Data processing and graphical representation
+- Data processing
+- Graphical representation
 
 ### APP TFG 2 — TopoSoft
 
@@ -96,6 +100,47 @@ The repository combines several technologies depending on each application:
 
 ---
 
+## 📁 Repository Structure
+
+The repository is organized to separate the different components of the project.
+
+```text
+TFG/
+│
+├── html/
+│   ├── index.html
+│   ├── graficar.html
+│   └── ayuda.html
+│
+├── pybackend/
+│   ├── app.py
+│   ├── requirements.txt
+│   └── puntos.db
+│
+├── main.js
+├── start.js
+├── package.json
+├── package-lock.json
+├── README.md
+└── .gitignore
+```
+
+Main components:
+
+- `html/index.html`: main interface for managing measurements, polygonal points, and radiations.
+- `html/graficar.html`: 3D visualization screen for representing polygonal paths and radiations.
+- `html/ayuda.html`: help screen for the user.
+- `pybackend/app.py`: FastAPI backend, data models, validation rules, API endpoints, and database access.
+- `pybackend/puntos.db`: local SQLite database.
+- `main.js`: Electron main process.
+- `start.js`: script used to start the backend and then launch Electron.
+- `package.json`: Node.js and Electron project configuration.
+- `requirements.txt`: Python backend dependencies.
+
+[Back to top](#top)
+
+---
+
 ## 📝 How to Start APP TFG 1
 
 To run the first application, make sure the required hardware and software environment are correctly prepared.
@@ -109,3 +154,203 @@ To run the first application, make sure the required hardware and software envir
 
 # 4. Run the corresponding Python script for data processing or visualization
 python main.py
+```
+
+> Note: the exact execution process may depend on the hardware configuration and the folder structure used for APP TFG 1.
+
+[Back to top](#top)
+
+---
+
+## 📝 How to Start APP TFG 2 — TopoSoft
+
+TopoSoft is built with Electron for the desktop interface and FastAPI for the local backend.
+
+### 1. Clone the repository
+
+```shell
+git clone https://github.com/Gu1ll07/TFG.git
+cd TFG
+```
+
+### 2. Install backend dependencies
+
+```shell
+cd pybackend
+
+python -m venv .venv
+```
+
+Activate the virtual environment:
+
+```shell
+# Windows
+.venv\Scripts\activate
+
+# macOS / Linux
+source .venv/bin/activate
+```
+
+Install Python dependencies:
+
+```shell
+pip install -r requirements.txt
+```
+
+### 3. Install Electron dependencies
+
+```shell
+cd ..
+npm install
+```
+
+### 4. Start the application
+
+```shell
+npm start
+```
+
+The application starts the local backend and opens the Electron desktop interface.
+
+Backend local URL:
+
+```text
+http://127.0.0.1:8000
+```
+
+[Back to top](#top)
+
+---
+
+## 🔌 Backend API
+
+TopoSoft includes a local FastAPI backend that manages measurements, polygonal points, and radiations.
+
+Main backend routes:
+
+```text
+GET     /health
+
+GET     /medidas
+POST    /medidas
+GET     /medidas/{mid}
+PUT     /medidas/{mid}
+DELETE  /medidas/{mid}
+
+GET     /puntos
+POST    /puntos
+GET     /puntos/{pid}
+PUT     /puntos/{pid}
+DELETE  /puntos/{pid}
+
+GET     /radiaciones
+POST    /radiaciones
+GET     /radiaciones/{rid}
+PUT     /radiaciones/{rid}
+DELETE  /radiaciones/{rid}
+```
+
+These endpoints allow the application to perform CRUD operations and maintain persistent local data through SQLite.
+
+[Back to top](#top)
+
+---
+
+## ✨ Main Features
+
+### Measurement Management
+
+TopoSoft allows users to create, select, consult, and delete independent topographic measurements. Each measurement acts as a working unit that groups polygonal points and radiations.
+
+### Polygonal Points
+
+Users can register polygonal points by entering:
+
+- Label
+- Distance
+- Inclination
+- Azimuth
+
+These values are stored in the local database and later used to calculate the 3D path.
+
+### Radiations
+
+The application allows users to add radiations associated with a base point belonging to the polygonal path. Each radiation is calculated from its corresponding base station.
+
+### Local Persistence
+
+All project data is stored locally using SQLite, allowing users to keep their measurements without depending on an external server.
+
+### 3D Visualization
+
+TopoSoft transforms topographic values into relative Cartesian coordinates and represents the polygonal path and its radiations using Plotly.js.
+
+### Desktop Environment
+
+The interface is executed as a desktop application using Electron, providing a local application experience while keeping the flexibility of web technologies.
+
+[Back to top](#top)
+
+---
+
+## 📚 Documentation
+
+The repository includes the source code and documentation related to the development of both applications.
+
+Recommended documentation sections:
+
+- Final Degree Project report.
+- Technical design and architecture.
+- Backend API structure.
+- Data model.
+- User interface design.
+- Testing and validation.
+- Future improvements.
+
+[Back to top](#top)
+
+---
+
+## 📌 Project Status
+
+The project currently provides a functional version of TopoSoft, including:
+
+- Local desktop execution.
+- Backend API with FastAPI.
+- SQLite local database.
+- Management of measurements, points, and radiations.
+- 3D visualization of topographic paths.
+- Basic validation and testing of the main workflows.
+
+Future improvements may include:
+
+- Advanced export and import options.
+- Improved help documentation.
+- Enhanced topographic calculations.
+- Automated testing.
+- Multiplatform packaging.
+- Integration with physical data acquisition devices.
+
+[Back to top](#top)
+
+---
+
+## 🗨️ Contact
+
+For more details about the project or any information regarding this repository, feel free to contact me.
+
+- **Email:** [guillobermejo@gmail.com](mailto:guillobermejo@gmail.com)
+
+You can also check my LinkedIn profile:
+
+<a href="https://www.linkedin.com/in/juan-guillo-bermejo-a5b940205/" target="_blank">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="30" />
+</a>
+
+---
+
+## 🎓 Final Degree Project
+
+Developed by **Juan Guillo Bermejo** as part of the Final Degree Project in Software Engineering.
+
+[Back to top](#top)
