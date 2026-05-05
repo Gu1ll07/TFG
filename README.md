@@ -1,87 +1,111 @@
+<a id="top"></a>
 
-⭐🔥 Why TopoSoft is the best choice for topography — find out in my [presentation]
+# 🌍 FINAL PROJECTS — Topography Software & Sensor-Based Systems
 
-## Table of Contents
+⭐🔥 **Two Final Degree Project applications focused on topography, measurement data, and 3D visualization.**
+
+This repository contains the software developed as part of my Final Degree Project. It includes two complementary applications related to topographic data acquisition, processing, management, and visualization.
+
+---
+
+## 📌 Table of Contents
+
 - [About](#-about)
-- [How to Build](#-how-to-build)
+- [Projects Included](#-projects-included)
+- [Technologies Used](#-technologies-used)
+- [How to Start APP TFG 1](#-how-to-start-app-tfg-1)
+- [How to Start APP TFG 2 — TopoSoft](#-how-to-start-app-tfg-2--toposoft)
 - [Documentation](#-documentation)
-- [Contacts](#%EF%B8%8F-contacts)
+- [Contact](#%EF%B8%8F-contact)
+
+---
 
 ## 🚀 About
 
-**FINAL PROJECTS** is a respository library designed to provide comprehensive support for OAuth2 and OpenID Connect on the server side. It adheres to high standards of flexibility, reusability, and reliability, utilizing well-known software design patterns, including modular and hexagonal architectures. These patterns ensure the following benefits:
+**FINAL PROJECTS** is a repository containing the two applications developed as part of my Final Degree Project, both focused on the field of topography and the management of measurement data.
+
+The first application focuses on the design of a **sensor-based topographic system**, integrating hardware and software components for data capture, processing, and representation.
+
+The second application, **TopoSoft**, is a local desktop tool for managing and visualizing basic topographic measurements. It allows users to create measurements, register polygonal points, add radiations associated with base stations, store the information locally, and represent the resulting paths in a three-dimensional environment.
+
+The repository is organized to document the technical development carried out, facilitate the execution of both applications, and maintain a clear structure of the source code, required resources, and project documentation.
 
 [Back to top](#top)
 
-## 📝 How to Start the APP TFG 1
+---
 
-To build the packages, follow these steps:
+## 🧩 Projects Included
 
-```shell
-# Open a terminal (Command Prompt or PowerShell for Windows, Terminal for macOS or Linux)
+### 📡 APP TFG 1 — Sensor-Based Topographic System
 
-# Ensure Git is installed
-# Visit https://git-scm.com to download and install console Git if not already installed
+The first application is related to the development of a topographic system based on sensors. Its purpose is to capture and process measurement data obtained from hardware components, such as inertial sensors and distance sensors, and represent the collected information through software tools.
 
-# Clone the repository
-git clone https://github.com/Abblix/Oidc.Server.git
+Main objectives:
 
-# Navigate to the project directory
-cd Oidc.Server
+- Capture topographic-related data from sensors.
+- Process raw measurement data.
+- Explore the use of low-cost hardware in topographic environments.
+- Provide a technical basis for future improvements involving physical data acquisition.
 
-# Check if .NET SDK is installed
-dotnet --version  # Check the installed version of .NET SDK
-# Visit the official Microsoft website to install or update it if necessary
+---
 
-# Restore dependencies
-dotnet restore
+### 🗺️ APP TFG 2 — TopoSoft
 
-# Compile the project
-dotnet build
+**TopoSoft** is a local desktop application designed to manage and visualize basic topographic measurements.
 
-```
+Main features:
 
-## 📝 How to Start the APP TFG 2
-
-To build the packages, follow these steps:
-
-```shell
-# Open a terminal (Command Prompt or PowerShell for Windows, Terminal for macOS or Linux)
-
-# Ensure Git is installed
-# Visit https://git-scm.com to download and install console Git if not already installed
-
-# Clone the repository
-git clone https://github.com/Abblix/Oidc.Server.git
-
-# Navigate to the project directory
-cd Oidc.Server
-
-# Check if .NET SDK is installed
-dotnet --version  # Check the installed version of .NET SDK
-# Visit the official Microsoft website to install or update it if necessary
-
-# Restore dependencies
-dotnet restore
-
-# Compile the project
-dotnet build
-
-```
-
-## 🗨️ Contacts
-
-For more details about the project or any information regarding this repository, feel free to reach out to me. I'm  here to provide support and answer any questions you may have. Below are the best ways to contact:
-
-- **Email**: Send us your inquiries or support requests at [guillobermejo@gmail.com](mailto:guillobermejo@gmail.com).
-
-Check my LinkedIn profile:
-
-<a href="https://www.linkedin.com/in/juan-guillo-bermejo-a5b940205/" target="_blank">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="30" />
-</a>
-
-
-We look forward to assisting you and ensuring your experience with our products is successful and enjoyable!
+- Create and manage independent measurements.
+- Register polygonal points using distance, inclination, and azimuth.
+- Add radiations associated with base points.
+- Store all information locally using SQLite.
+- Display the polygonal path and radiations in a 3D interactive view.
+- Run as a desktop application using Electron.
 
 [Back to top](#top)
+
+---
+
+## 🛠️ Technologies Used
+
+The repository combines several technologies depending on each application:
+
+### APP TFG 1
+
+- Arduino IDE
+- Sensor-based data acquisition
+- Python
+- Serial communication
+- Data processing and graphical representation
+
+### APP TFG 2 — TopoSoft
+
+- Electron
+- HTML5
+- CSS3
+- JavaScript
+- Python
+- FastAPI
+- Pydantic
+- SQLAlchemy
+- SQLite
+- Plotly.js
+- Node.js / npm
+
+[Back to top](#top)
+
+---
+
+## 📝 How to Start APP TFG 1
+
+To run the first application, make sure the required hardware and software environment are correctly prepared.
+
+```shell
+# 1. Open the Arduino IDE
+
+# 2. Connect the required sensors and microcontroller
+
+# 3. Upload the Arduino sketch to the board
+
+# 4. Run the corresponding Python script for data processing or visualization
+python main.py
