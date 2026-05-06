@@ -1,6 +1,8 @@
 {
   "name": "juan-app-mediciones",
   "version": "0.3.0",
+  "author": "Juan Guillo Bermejo",
+  "description": "Aplicación TFG_2",
   "private": true,
   "main": "main.js",
   "type": "module",

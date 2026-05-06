@@ -126,7 +126,9 @@ function createWindow() {
   });
 
   win.loadFile(path.join(__dirname, "html", "index.html"));
-  win.webContents.openDevTools({ mode: "detach" });
+  if (!app.isPackaged) {
+    win.webContents.openDevTools({ mode: "detach" });
+  }
 }
 
 app.whenReady().then(async () => {
