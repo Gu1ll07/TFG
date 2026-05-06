@@ -1,128 +1,356 @@
-[![TFG](https://imgcdn.stablediffusionweb.com/2025/3/9/326b7a66-ec27-40c6-9fd1-c5ea7f685cd6.jpg)]
+<a id="top"></a>
 
-⭐🔥 Why TopoSoft is the best choice for topography — find out in our [presentation](https://resources.abblix.com/pdf/abblix-oidc-server-presentation-eng.pdf) 📑
+# 🌍 FINAL PROJECTS — Topography Software & Sensor-Based Systems
 
-## Table of Contents
+⭐🔥 **Two Final Degree Project applications focused on topography, measurement data, and 3D visualization.**
+
+This repository contains the software developed as part of my Final Degree Project. It includes two complementary applications related to topographic data acquisition, processing, management, and visualization.
+
+---
+
+## 📌 Table of Contents
+
 - [About](#-about)
-- [What's New](#-whats-new)
-- [Certification](#-certification)
-- [How to Build](#-how-to-build)
+- [Projects Included](#-projects-included)
+- [Technologies Used](#-technologies-used)
+- [Repository Structure](#-repository-structure)
+- [How to Start APP TFG 1](#-how-to-start-app-tfg-1)
+- [How to Start APP TFG 2 — TopoSoft](#-how-to-start-app-tfg-2--toposoft)
+- [Main Features](#-main-features)
 - [Documentation](#-documentation)
-- [Feedback and Contributions](#-feedback-and-contributions)
-- [License](#-license)
-- [Contacts](#%EF%B8%8F-contacts)
+- [Project Status](#-project-status)
+- [Contact](#%EF%B8%8F-contact)
+
+---
 
 ## 🚀 About
 
-**FINAL PROJECTS** is a respository library designed to provide comprehensive support for OAuth2 and OpenID Connect on the server side. It adheres to high standards of flexibility, reusability, and reliability, utilizing well-known software design patterns, including modular and hexagonal architectures. These patterns ensure the following benefits:
+**FINAL PROJECTS** is a repository containing the two applications developed as part of my Final Degree Project, both focused on the field of topography and the management of measurement data.
 
-- **Modularity**: Different parts of the library can function independently, enhancing the library's modularity and allowing for easier maintenance and updates.
-- **Testability**: Improved separation of concerns makes the code more testable.
-- **Maintainability**: Clear structure and separation facilitate better management of the codebase.
+The first application focuses on the design of a **sensor-based topographic system**, integrating hardware and software components for data capture, processing, and representation.
 
-The library also supports Dependency Injection through the standard .NET DI container, aiding in the organization and management of code. Specifically tailored for seamless integration with ASP.NET WebApi, Abblix OIDC Server employs standard controller classes, binding, and routing mechanisms, simplifying the integration of OpenID Connect into your services.
+The second application, **TopoSoft**, is a local desktop tool for managing and visualizing basic topographic measurements. It allows users to create measurements, register polygonal points, add radiations associated with base stations, store the information locally, and represent the resulting paths in a three-dimensional environment.
 
-## ✨ What's New
-
-### Version 2.0.0 (Latest)
-
-⚡ **Breaking Changes**
-- **Result Pattern Migration**: Migrated to `Result<TSuccess, TFailure>` pattern for compiler-enforced explicit error handling and functional programming style
-- **Framework Updates**: Dropped .NET 6 & 7 (EOL) - now targets .NET 8 (LTS), .NET 9 (STS), and .NET 10 (LTS - released Nov 2025, supported until Nov 2028)
-
-🚀 **Features**
-- **mTLS Client Authentication (RFC 8705)**: Self-signed and PKI/CA validation with certificate-bound tokens
-- **JWT Bearer Grant Type (RFC 7523)**: Service-to-service authentication using signed JWTs for secure API-to-API communication
-- **Device Authorization Grant (RFC 8628)**: OAuth flow for input-constrained devices (smart TVs, IoT, CLI tools)
-- **CIBA Ping/Push Modes & Long-Polling**: Complete delivery mode implementation with ping notifications, push token delivery, and long-polling support
-- **client_secret_jwt Authentication**: JWT-based client authentication per OIDC Core spec
-- **SSRF Protection**: Multi-layered defense with DNS validation and IP blocking
-- **Protocol Buffer Serialization**: 40-60% smaller storage footprint with faster processing
-- **ECDSA Certificate Support**: Enables compliance with modern security standards that mandate or prefer elliptic curve cryptography
-
-> **Migration Note**: This release contains breaking changes. See 📋[Migration Guide](MIGRATION-2.0.md).
+The repository is organized to document the technical development carried out, facilitate the execution of both applications, and maintain a clear structure of the source code, required resources, and project documentation.
 
 [Back to top](#top)
 
-## 📝 How to Start the APP TFG 1
+---
 
-To build the packages, follow these steps:
+## 🧩 Projects Included
 
-```shell
-# Open a terminal (Command Prompt or PowerShell for Windows, Terminal for macOS or Linux)
+### 📡 APP TFG 1 — Sensor-Based Topographic System
 
-# Ensure Git is installed
-# Visit https://git-scm.com to download and install console Git if not already installed
+The first application is related to the development of a topographic system based on sensors. Its purpose is to capture and process measurement data obtained from hardware components, such as inertial sensors and distance sensors, and represent the collected information through software tools.
 
-# Clone the repository
-git clone https://github.com/Abblix/Oidc.Server.git
+Main objectives:
 
-# Navigate to the project directory
-cd Oidc.Server
+- Capture topographic-related data from sensors.
+- Process raw measurement data.
+- Explore the use of low-cost hardware in topographic environments.
+- Provide a technical basis for future improvements involving physical data acquisition.
 
-# Check if .NET SDK is installed
-dotnet --version  # Check the installed version of .NET SDK
-# Visit the official Microsoft website to install or update it if necessary
+---
 
-# Restore dependencies
-dotnet restore
+### 🗺️ APP TFG 2 — TopoSoft
 
-# Compile the project
-dotnet build
+**TopoSoft** is a local desktop application designed to manage and visualize basic topographic measurements.
 
+Main features:
+
+- Create and manage independent measurements.
+- Register polygonal points using distance, inclination, and azimuth.
+- Add radiations associated with base points.
+- Store all information locally using SQLite.
+- Display the polygonal path and radiations in a 3D interactive view.
+- Run as a desktop application using Electron.
+
+[Back to top](#top)
+
+---
+
+## 🛠️ Technologies Used
+
+The repository combines several technologies depending on each application.
+
+### APP TFG 1
+
+- Arduino IDE
+- Sensor-based data acquisition
+- Python
+- Serial communication
+- Data processing
+- Graphical representation
+
+### APP TFG 2 — TopoSoft
+
+- Electron
+- HTML5
+- CSS3
+- JavaScript
+- Python
+- FastAPI
+- Pydantic
+- SQLAlchemy
+- SQLite
+- Plotly.js
+- Node.js / npm
+
+[Back to top](#top)
+
+---
+
+## 📁 Repository Structure
+
+The repository is organized to separate the different components of the project.
+
+```text
+TFG/
+│
+├── html/
+│   ├── index.html
+│   ├── graficar.html
+│   └── ayuda.html
+│
+├── pybackend/
+│   ├── app.py
+│   ├── requirements.txt
+│   └── puntos.db
+│
+├── main.js
+├── start.js
+├── package.json
+├── package-lock.json
+├── README.md
+└── .gitignore
 ```
 
-## 📝 How to Start the APP TFG 2
+Main components:
 
-To build the packages, follow these steps:
+- `html/index.html`: main interface for managing measurements, polygonal points, and radiations.
+- `html/graficar.html`: 3D visualization screen for representing polygonal paths and radiations.
+- `html/ayuda.html`: help screen for the user.
+- `pybackend/app.py`: FastAPI backend, data models, validation rules, API endpoints, and database access.
+- `pybackend/puntos.db`: local SQLite database.
+- `main.js`: Electron main process.
+- `start.js`: script used to start the backend and then launch Electron.
+- `package.json`: Node.js and Electron project configuration.
+- `requirements.txt`: Python backend dependencies.
+
+[Back to top](#top)
+
+---
+
+## 📝 How to Start APP TFG 1
+
+To run the first application, make sure the required hardware and software environment are correctly prepared.
 
 ```shell
-# Open a terminal (Command Prompt or PowerShell for Windows, Terminal for macOS or Linux)
+# 1. Open the Arduino IDE
 
-# Ensure Git is installed
-# Visit https://git-scm.com to download and install console Git if not already installed
+# 2. Connect the required sensors and microcontroller
 
-# Clone the repository
-git clone https://github.com/Abblix/Oidc.Server.git
+# 3. Upload the Arduino sketch to the board
 
-# Navigate to the project directory
-cd Oidc.Server
-
-# Check if .NET SDK is installed
-dotnet --version  # Check the installed version of .NET SDK
-# Visit the official Microsoft website to install or update it if necessary
-
-# Restore dependencies
-dotnet restore
-
-# Compile the project
-dotnet build
-
+# 4. Run the corresponding Python script for data processing or visualization
+python main.py
 ```
-                                                                                                                                                                            
+
+> Note: the exact execution process may depend on the hardware configuration and the folder structure used for APP TFG 1.
+
+[Back to top](#top)
+
+---
+
+## 📝 How to Start APP TFG 2 — TopoSoft
+
+TopoSoft is built with Electron for the desktop interface and FastAPI for the local backend.
+
+### 1. Clone the repository
+
+```shell
+git clone https://github.com/Gu1ll07/TFG.git
+cd TFG
+```
+
+### 2. Install backend dependencies
+
+```shell
+cd pybackend
+
+python -m venv .venv
+```
+
+Activate the virtual environment:
+
+```shell
+# Windows
+.venv\Scripts\activate
+
+# macOS / Linux
+source .venv/bin/activate
+```
+
+Install Python dependencies:
+
+```shell
+pip install -r requirements.txt
+```
+
+### 3. Install Electron dependencies
+
+```shell
+cd ..
+npm install
+```
+
+### 4. Start the application
+
+```shell
+npm start
+```
+
+The application starts the local backend and opens the Electron desktop interface.
+
+Backend local URL:
+
+```text
+http://127.0.0.1:8000
+```
+
+[Back to top](#top)
+
+---
+
+## 🔌 Backend API
+
+TopoSoft includes a local FastAPI backend that manages measurements, polygonal points, and radiations.
+
+Main backend routes:
+
+```text
+GET     /health
+
+GET     /medidas
+POST    /medidas
+GET     /medidas/{mid}
+PUT     /medidas/{mid}
+DELETE  /medidas/{mid}
+
+GET     /puntos
+POST    /puntos
+GET     /puntos/{pid}
+PUT     /puntos/{pid}
+DELETE  /puntos/{pid}
+
+GET     /radiaciones
+POST    /radiaciones
+GET     /radiaciones/{rid}
+PUT     /radiaciones/{rid}
+DELETE  /radiaciones/{rid}
+```
+
+These endpoints allow the application to perform CRUD operations and maintain persistent local data through SQLite.
+
+[Back to top](#top)
+
+---
+
+## ✨ Main Features
+
+### Measurement Management
+
+TopoSoft allows users to create, select, consult, and delete independent topographic measurements. Each measurement acts as a working unit that groups polygonal points and radiations.
+
+### Polygonal Points
+
+Users can register polygonal points by entering:
+
+- Label
+- Distance
+- Inclination
+- Azimuth
+
+These values are stored in the local database and later used to calculate the 3D path.
+
+### Radiations
+
+The application allows users to add radiations associated with a base point belonging to the polygonal path. Each radiation is calculated from its corresponding base station.
+
+### Local Persistence
+
+All project data is stored locally using SQLite, allowing users to keep their measurements without depending on an external server.
+
+### 3D Visualization
+
+TopoSoft transforms topographic values into relative Cartesian coordinates and represents the polygonal path and its radiations using Plotly.js.
+
+### Desktop Environment
+
+The interface is executed as a desktop application using Electron, providing a local application experience while keeping the flexibility of web technologies.
+
+[Back to top](#top)
+
+---
+
 ## 📚 Documentation
 
-### Getting Started
-Explore the [Getting Started Guide](https://docs.abblix.com/docs/getting-started-guide).
-In this guide, you will create a working solution step by step, building an OpenID Connect Provider using ASP.NET MVC and the Abblix OIDC Server solution.
+The repository includes the source code and documentation related to the development of both applications.
 
-To better understand the Abblix OIDC Server product, we recommend visiting our [Documentation](https://docs.abblix.com/docs) site. There, you will find useful information about the product and the OpenID Connect standard.
+Recommended documentation sections:
+
+- Final Degree Project report.
+- Technical design and architecture.
+- Backend API structure.
+- Data model.
+- User interface design.
+- Testing and validation.
+- Future improvements.
 
 [Back to top](#top)
 
-## 🗨️ Contacts
+---
 
-For more details about the project or any information regarding this repository, feel free to reach out to me. I'm  here to provide support and answer any questions you may have. Below are the best ways to contact:
+## 📌 Project Status
 
-- **Email**: Send us your inquiries or support requests at [guillobermejo@abblix.com](mailto:guillobermejo@gmail.com).
+The project currently provides a functional version of TopoSoft, including:
 
-Check my LinkedIn profile:
+- Local desktop execution.
+- Backend API with FastAPI.
+- SQLite local database.
+- Management of measurements, points, and radiations.
+- 3D visualization of topographic paths.
+- Basic validation and testing of the main workflows.
+
+Future improvements may include:
+
+- Advanced export and import options.
+- Improved help documentation.
+- Enhanced topographic calculations.
+- Automated testing.
+- Multiplatform packaging.
+- Integration with physical data acquisition devices.
+
+[Back to top](#top)
+
+---
+
+## 🗨️ Contact
+
+For more details about the project or any information regarding this repository, feel free to contact me.
+
+- **Email:** [guillobermejo@gmail.com](mailto:guillobermejo@gmail.com)
+
+You can also check my LinkedIn profile:
 
 <a href="https://www.linkedin.com/in/juan-guillo-bermejo-a5b940205/" target="_blank">
   <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="30" />
 </a>
 
+---
 
-We look forward to assisting you and ensuring your experience with our products is successful and enjoyable!
+## 🎓 Final Degree Project
+
+Developed by **Juan Guillo Bermejo** as part of the Final Degree Project in Software Engineering.
 
 [Back to top](#top)
