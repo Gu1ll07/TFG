@@ -109,7 +109,7 @@ TFG/
 │
 ├── html/
 │   ├── index.html
-│   ├── graficar.html
+│   ├── grafica.html
 │   └── ayuda.html
 │
 ├── pybackend/
@@ -128,7 +128,7 @@ TFG/
 Main components:
 
 - `html/index.html`: main interface for managing measurements, polygonal points, and radiations.
-- `html/graficar.html`: 3D visualization screen for representing polygonal paths and radiations.
+- `html/grafica.html`: 3D visualization screen for representing polygonal paths and radiations.
 - `html/ayuda.html`: help screen for the user.
 - `pybackend/app.py`: FastAPI backend, data models, validation rules, API endpoints, and database access.
 - `pybackend/puntos.db`: local SQLite database.
