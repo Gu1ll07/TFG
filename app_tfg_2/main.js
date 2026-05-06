@@ -121,6 +121,21 @@ function createWindow() {
     height: 1080
   });
 
+    win.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith("https://github.com/")) {
+      return {
+        action: "allow",
+        overrideBrowserWindowOptions: {
+          width: 1920,
+          height: 1080,
+          autoHideMenuBar: true,
+          title: "Repositorio de GitHub"
+        }
+      };
+    }
+    return { action: "deny" };
+  });
+
   win.webContents.on("did-fail-load", (_event, code, desc, url) => {
     dialog.showErrorBox("Error cargando renderer", `Código: ${code}\nDescripción: ${desc}\nURL: ${url}`);
   });
