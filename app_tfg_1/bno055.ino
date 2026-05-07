@@ -1,106 +1,156 @@
-// Librerías necesarias
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <SoftwareSerial.h>
 
-// Configuración del sensor BNO055
+// =========================
+// CONFIGURACIÓN DE SENSORES
+// =========================
+
+// Sensor BNO055
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
 
-// Configuración del sensor láser
-SoftwareSerial mySerial(2, 3); // TX = 3, RX = 2
-char buff[4] = {0x80, 0x06, 0x03, 0x77};
+// Sensor láser
+// SoftwareSerial(RX, TX)
+// Arduino pin 2 RX <- TX del sensor láser
+// Arduino pin 3 TX -> RX del sensor láser
+SoftwareSerial mySerial(2, 3);
+
+byte buff[4] = {0x80, 0x06, 0x03, 0x77};
 unsigned char data[11] = {0};
 
-// Configuración del botón
+// Botón
 const int botonPin = 7;
+
+// Control de pulsación
+bool botonAnterior = HIGH;
 
 void setup() {
   Serial.begin(115200);
   mySerial.begin(9600);
 
-  pinMode(botonPin, INPUT_PULLUP);  // Configurar el botón con resistencia interna
+  pinMode(botonPin, INPUT_PULLUP);
 
   if (!bno.begin()) {
-    Serial.println("No se encontró el BNO055, verifica las conexiones.");
+    Serial.println("ERROR_BNO055");
     while (1);
   }
-  bno.setExtCrystalUse(true); 
+
+  delay(1000);
+  bno.setExtCrystalUse(true);
+
+  Serial.println("READY");
 }
 
 void loop() {
-  if (digitalRead(botonPin) == LOW) {  // Si el botón es presionado
-    float distancia = medirDistancia();
-    float azimut, pitch, roll;
-    medirOrientacion(&azimut, &pitch, &roll);
+  bool botonActual = digitalRead(botonPin);
 
-    // Enviar solo los datos medidos al puerto serial.
-    Serial.print(distancia, 3);
-    Serial.print(",");
-    Serial.print(azimut, 2);
-    Serial.print(",");
-    Serial.print(pitch, 2);
-    Serial.print(",");
-    Serial.println(roll, 2);
+  // Detecta pulsación: HIGH -> LOW
+  if (botonAnterior == HIGH && botonActual == LOW) {
+    delay(50); // Antirrebote básico
 
-    delay(500);  // Pausa para evitar lecturas múltiples rápidamente
+    if (digitalRead(botonPin) == LOW) {
+      float distancia = medirDistancia();
+
+      if (distancia < 0) {
+        Serial.println("ERROR_LASER");
+      } else {
+        float azimut, pitch, roll;
+        medirOrientacion(&azimut, &pitch, &roll);
+
+        // Formato limpio para Python:
+        // distancia,azimut,pitch,roll
+        Serial.print(distancia, 3);
+        Serial.print(",");
+        Serial.print(azimut, 2);
+        Serial.print(",");
+        Serial.print(pitch, 2);
+        Serial.print(",");
+        Serial.println(roll, 2);
+      }
+
+      // Esperar a que se suelte el botón
+      while (digitalRead(botonPin) == LOW) {
+        delay(10);
+      }
+    }
   }
+
+  botonAnterior = botonActual;
+  delay(20);
 }
 
 float medirDistancia() {
-  mySerial.print(buff);
-  delay(50);
-
-  if (mySerial.available() > 0) {
-    for (int i = 0; i < 11; i++) {
-      data[i] = mySerial.read();
-    }
-
-    // Verificar que los datos son correctos
-    unsigned char Check = 0;
-    for (int i = 0; i < 10; i++) {
-      Check = Check + data[i];
-    }
-    Check = ~Check + 1;
-
-    if (data[10] == Check) {
-      // Depuración: Imprimir datos recibidos en hexadecimal
-      Serial.print("Datos recibidos: ");
-      for (int i = 0; i < 11; i++) {
-        Serial.print(data[i], HEX);
-        Serial.print(" ");
-      }
-      Serial.println();
-
-      if (data[3] == 'E' && data[4] == 'R' && data[5] == 'R') {
-        Serial.println("Error: Distancia fuera de rango");
-        return -1.0;
-      } else {
-        // Verificar si el número recibido es negativo
-        bool esNegativo = (data[3] == '-');
-
-        float distance = (data[3 + esNegativo] - '0') * 100 +
-                         (data[4 + esNegativo] - '0') * 10 +
-                         (data[5 + esNegativo] - '0') * 1 +
-                         (data[7 + esNegativo] - '0') * 0.1 +
-                         (data[8 + esNegativo] - '0') * 0.01 +
-                         (data[9 + esNegativo] - '0') * 0.001;
-
-        return esNegativo ? -distance : distance;
-      }
-    } else {
-      Serial.println("Error: Datos inválidos");
-      return -1.0;
-    }
+  // Limpiar buffer anterior
+  while (mySerial.available()) {
+    mySerial.read();
   }
-  return -1.0;
+
+  // Enviar comando binario al sensor láser
+  mySerial.write(buff, 4);
+
+  // Esperar respuesta con timeout
+  unsigned long inicio = millis();
+
+  while (mySerial.available() < 11 && millis() - inicio < 500) {
+    delay(5);
+  }
+
+  if (mySerial.available() < 11) {
+    return -1.0;
+  }
+
+  for (int i = 0; i < 11; i++) {
+    data[i] = mySerial.read();
+  }
+
+  // Checksum
+  unsigned char check = 0;
+
+  for (int i = 0; i < 10; i++) {
+    check += data[i];
+  }
+
+  check = ~check + 1;
+
+  if (data[10] != check) {
+    return -1.0;
+  }
+
+  // Fuera de rango
+  if (data[3] == 'E' && data[4] == 'R' && data[5] == 'R') {
+    return -1.0;
+  }
+
+  // Conversión a metros
+  bool esNegativo = (data[3] == '-');
+
+  int offset = esNegativo ? 1 : 0;
+
+  float distance =
+      (data[3 + offset] - '0') * 100 +
+      (data[4 + offset] - '0') * 10 +
+      (data[5 + offset] - '0') * 1 +
+      (data[7 + offset] - '0') * 0.1 +
+      (data[8 + offset] - '0') * 0.01 +
+      (data[9 + offset] - '0') * 0.001;
+
+  if (esNegativo) {
+    distance = -distance;
+  }
+
+  return distance;
 }
 
 void medirOrientacion(float* azimut, float* pitch, float* roll) {
   sensors_event_t event;
   bno.getEvent(&event);
-  
+
+  // BNO055:
+  // orientation.x = heading / azimut
+  // orientation.y = roll
+  // orientation.z = pitch
   *azimut = event.orientation.x;
-  *pitch = event.orientation.y;
-  *roll = event.orientation.z;
+  *roll = event.orientation.y;
+  *pitch = event.orientation.z;
 }

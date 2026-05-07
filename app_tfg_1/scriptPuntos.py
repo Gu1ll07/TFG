@@ -133,6 +133,10 @@ def leer_datos():
 
     if not datos:
         return None
+    
+    if datos in ["READY", "ERROR_BNO055", "ERROR_LASER"]:
+        print(f"Mensaje Arduino: {datos}")
+        return None
 
     partes = datos.split(',')
     if len(partes) != 4:
