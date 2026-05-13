@@ -88,7 +88,7 @@
         sel.appendChild(opt);
       }
 
-      const mid = getQueryMedidaById();
+      const mid = getQueryMedidaId();
       if (mid && data.items.some(m => m.id === mid)) sel.value = String(mid);
     }
 
@@ -209,7 +209,7 @@
 
       setQueryMedidaId(mid);
       el("status").textContent = "Cargando recorrido topográfico......";
-      el("emptyMensaje").style.display = "Nada";
+      el("emptyMensaje").style.display = "none";
 
       const points = await loadAllPuntos(mid);
       const radiations = await loadAllRadiaciones(mid);

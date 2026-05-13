@@ -73,14 +73,14 @@ class PointOut(PointIn):
     id: int
     created_at: datetime
 
-class RadacionIn(BaseModel):
+class RadiacionIn(BaseModel):
     label: Optional[str] = Field(None)
     distancia: float = Field(ge=0)
     inclinacion: float = Field(ge=-90, le=90)
     azimut: float = Field(ge=0, lt=360)
     base_point_id: int
 
-class RadacionOut(RadacionIn):
+class RadiacionOut(RadiacionIn):
     id: int
     medida_id: Optional[int]
     created_at: datetime
@@ -89,7 +89,7 @@ class PageRadiaciones(BaseModel):
     page: int
     pages: int
     total: int
-    items: List[RadacionOut]
+    items: List[RadiacionOut]
 
 class PageMedidas(BaseModel):
     page: int
@@ -211,8 +211,8 @@ def list_puntos(page: int = Query(1, ge=1), limit: int = Query(10, ge=1, le=100)
         out = [PointOut(id=o.id, label=o.label, distancia=o.distancia, inclinacion=o.inclinacion, azimut=o.azimut, medida_id=o.medida_id, created_at=o.created_at) for o in items]
         return PagePuntos(page=page, pages=pages, total=total, items=out)
 
-@app.post("/radiaciones", response_model=RadacionOut)
-def create_radacion(r: RadacionIn = Body(...)):
+@app.post("/radiaciones", response_model=RadiacionOut)
+def create_radiacion(r: RadiacionIn = Body(...)):
     with SessionLocal() as db:
         bp = db.get(PuntosDB, r.base_point_id)
         if not bp:
@@ -227,7 +227,7 @@ def create_radacion(r: RadacionIn = Body(...)):
             medida_id=bp.medida_id
         )
         db.add(obj); db.commit(); db.refresh(obj)
-        return RadacionOut(
+        return RadiacionOut(
             id=obj.id, label=obj.label, distancia=obj.distancia,
             inclinacion=obj.inclinacion, azimut=obj.azimut,
             base_point_id=obj.base_point_id, medida_id=obj.medida_id,
@@ -235,25 +235,25 @@ def create_radacion(r: RadacionIn = Body(...)):
         )
 
 # EVENTOS GET, POST Y DELETE DE RADIACIONES
-@app.get("/radiaciones/{rid}", response_model=RadacionOut)
-def get_radacion(rid: int):
+@app.get("/radiaciones/{rid}", response_model=RadiacionOut)
+def get_radiacion(rid: int):
     with SessionLocal() as db:
         obj = db.get(RadiacionDB, rid)
         if not obj:
-            raise HTTPException(404, "radacion not found")
-        return RadacionOut(
+            raise HTTPException(404, "radiacion not found")
+        return RadiacionOut(
             id=obj.id, label=obj.label, distancia=obj.distancia,
             inclinacion=obj.inclinacion, azimut=obj.azimut,
             base_point_id=obj.base_point_id, medida_id=obj.medida_id,
             created_at=obj.created_at
         )
 
-@app.put("/radiaciones/{rid}", response_model=RadacionOut)
-def update_radacion(rid: int, r: RadacionIn = Body(...)):
+@app.put("/radiaciones/{rid}", response_model=RadiacionOut)
+def update_radiacion(rid: int, r: RadiacionIn = Body(...)):
     with SessionLocal() as db:
         obj = db.get(RadiacionDB, rid)
         if not obj:
-            raise HTTPException(404, "radacion not found")
+            raise HTTPException(404, "radiacion not found")
 
         bp = db.get(PuntosDB, r.base_point_id)
         if not bp:
@@ -267,7 +267,7 @@ def update_radacion(rid: int, r: RadacionIn = Body(...)):
         obj.medida_id = bp.medida_id
 
         db.commit(); db.refresh(obj)
-        return RadacionOut(
+        return RadiacionOut(
             id=obj.id, label=obj.label, distancia=obj.distancia,
             inclinacion=obj.inclinacion, azimut=obj.azimut,
             base_point_id=obj.base_point_id, medida_id=obj.medida_id,
@@ -296,7 +296,7 @@ def list_radiaciones(
         items = query.order_by(RadiacionDB.id.desc()).offset((page-1)*limit).limit(limit).all()
 
         out = [
-            RadacionOut(
+            RadiacionOut(
                 id=o.id, label=o.label, distancia=o.distancia,
                 inclinacion=o.inclinacion, azimut=o.azimut,
                 base_point_id=o.base_point_id, medida_id=o.medida_id,
@@ -306,11 +306,11 @@ def list_radiaciones(
         return PageRadiaciones(page=page, pages=pages, total=total, items=out)
 
 @app.delete("/radiaciones/{rid}")
-def delete_radacion(rid: int):
+def delete_radiacion(rid: int):
     with SessionLocal() as db:
         obj = db.get(RadiacionDB, rid)
         if not obj:
-            raise HTTPException(404, "radacion not found")
+            raise HTTPException(404, "radiacion not found")
         db.delete(obj)
         db.commit()
         return JSONResponse({"deleted": rid})
