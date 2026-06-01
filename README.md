@@ -351,6 +351,6 @@ You can also check my LinkedIn profile:
 
 ## 🎓 Final Degree Project
 
-Developed by **Juan Guillo Bermejo** as part of the Final Degree Project in Software Engineering.
+Developed by **Juan Guillo Bermejo** as part of the Final Degree Projects in Software Engineering and Computer Engineering.
 
 [Back to top](#top)
