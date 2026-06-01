@@ -105,7 +105,18 @@ The repository combines several technologies depending on each application.
 The repository is organized to separate the different components of the project.
 
 ```text
-TFG/
+app_tfg_1/
+│
+├── test examples/
+│   ├── bno055.ino
+│   ├── laser.ino
+│   ├──
+│   └── 
+│
+├──bno055.ino
+├──scriptPuntos.py
+│ 
+app_tfg_2/
 │
 ├── html/
 │   ├── index.html
