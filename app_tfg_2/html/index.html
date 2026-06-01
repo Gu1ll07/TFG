@@ -69,10 +69,10 @@
       </div>
       <div class="columna">
         <label style="flex:1">Inclinación
-          <input id="inclinacion" type="number" step="any" placeholder="0.0"/>
+          <input id="inclinacion" type="number" step="any" min="-90" max="90" placeholder="0.0"/>
         </label>
         <label style="flex:1">Azimut
-          <input id="azimut" type="number" step="any" placeholder="0.0"/>
+          <input id="azimut" type="number" step="any" min="0" max="359.999" placeholder="0.0"/>
         </label>
       </div>
       <br>
@@ -102,10 +102,10 @@
         <input id="distancia_radiacion" type="number" step="any" placeholder="0.0"/>
       </label>
       <label style="flex:1">Inclinación radiación
-        <input id="inclinacion_radiacion" type="number" step="any" placeholder="0.0"/>
+        <input id="inclinacion_radiacion" type="number" step="any" min="-90" max="90" placeholder="0.0"/>
       </label>
       <label style="flex:1">Azimut radiación
-        <input id="azimut_radiacion" type="number" step="any" placeholder="0.0"/>
+        <input id="azimut_radiacion" type="number" step="any" min="0" max="359.999" placeholder="0.0"/>
       </label>
     </div>
 
@@ -210,7 +210,7 @@
       if (medidaActiva && data.items.some(m => m.id === medidaActiva)) {
         sel.value = String(medidaActiva);
       } else {
-        medidaActiva = null;   // AÑADIDO
+        medidaActiva = null;
         sel.value = "";
       }
       el("measMsg").textContent = data.total ? "Selecciona una medición para filtrar los puntos." : "Crea tu primera medición.";
@@ -327,7 +327,7 @@
 
       if (!medidaActiva) return;
 
-      const pageSize = 100; // backend /puntos => limit <= 100
+      const pageSize = 100;
       let p = 1;
       let all = [];
 
@@ -514,7 +514,6 @@
     el("save").onclick = guardarPunto;
     el("reset").onclick = refresh;
 
-    // Radiaciones
     el("rad_save").onclick = guardarRadiacion;
     el("rad_reset").onclick = resetRadiacion;
     el("rad_prev").onclick = () => { if (radPage>1) { radPage--; listarRadiaciones(); } };

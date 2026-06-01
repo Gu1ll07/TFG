@@ -112,7 +112,7 @@
         page += 1;
       }
 
-      // El backend te devuelve por defecto el orden en DESC; por lo que tenemos que cambiar a ASC para el recorrido
+      // Ordenamos ASC el recorrido
       all.sort((a, b) => a.id - b.id);
       return all;
     }
@@ -131,7 +131,6 @@
 
         const res = await fetch(url.toString());
 
-        // Si el backend aún no tiene /radiations (404) o falla, no rompas el plot.
         if (!res.ok) return [];
 
         const data = await res.json();
@@ -147,7 +146,7 @@
 
     function buildRecorrido(points) {
       let x = 0, y = 0, z = 0;
-      const byPointId = {}; // point.id -> coordenadas del vértice tras aplicar el tramo
+      const byPointId = {}; 
 
       const X = [x], Y = [y], Z = [z];
       const hover = ["P0 (origen)<br>x=0.000<br>y=0.000<br>z=0.000"];
