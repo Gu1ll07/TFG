@@ -233,6 +233,53 @@ http://127.0.0.1:8000
 
 ---
 
+## 🖥️ Windows Installer — TopoSoft
+
+A Windows installer has been generated for **APP TFG 2 — TopoSoft**, allowing the application to be installed and executed as a desktop application without manually launching the backend or running `npm start`.
+
+The installer is created with **Electron Builder** using the NSIS target defined in `package.json`. During the packaging process, the Python backend is first converted into an executable with **PyInstaller** and then included as an Electron resource. When the installed application starts, Electron automatically launches the local FastAPI backend and opens the graphical interface.
+
+### Installer generation workflow
+
+If only frontend or Electron files are modified, the backend does not need to be rebuilt. From the `app_tfg_2` directory:
+
+```shell
+npm run app:dir
+npm run app:dist
+```
+
+If backend files are modified, the Python executable must be regenerated before building the installer:
+
+```shell
+cd pybackend
+.venv\Scripts\Activate.ps1
+python -m PyInstaller --noconfirm --clean --onedir --name backend app.py
+cd ..
+npm run app:dir
+npm run app:dist
+```
+
+The command `npm run app:dir` generates an unpacked version of the application for testing, while `npm run app:dist` generates the final Windows installer.
+
+After running `npm run app:dist`, the installer is located in:
+
+```text
+app_tfg_2/dist/
+```
+
+The generated installer follows the project configuration and is usually named similarly to:
+
+```text
+TopoSoft Setup 0.3.0.exe
+```
+
+> Note: generated folders such as `dist/`, `build/`, `.venv/`, `node_modules/` and PyInstaller temporary files should not be committed to the repository.
+
+[Back to top](#top)
+
+---
+
+
 ## 🔌 Backend API
 
 TopoSoft includes a local FastAPI backend that manages measurements, polygonal points, and radiations.
