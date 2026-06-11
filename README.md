@@ -154,7 +154,7 @@ Main components:
 
 ## 📝 How to Start APP TFG 1
 
-To run the first application, make sure the required hardware and software environments are correctly prepared. If you do not have any hardware, you can run the application in simulation mode.
+To run the first application, make sure the required hardware and software environments are correctly prepared. If you do not have any hardware, you can run the application in simulation mode (jump to step 4).
 
 ```shell
 # 1. Open the Arduino IDE
@@ -164,7 +164,7 @@ To run the first application, make sure the required hardware and software envir
 # 3. Upload the Arduino sketch to the board
 
 # 4. Run the corresponding Python script for data processing or visualization
-python main.py
+python scriptPuntos.py
 ```
 
 > Note: the exact execution process may depend on the hardware configuration and the folder structure used for APP TFG 1.
