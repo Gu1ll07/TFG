@@ -154,7 +154,7 @@ Main components:
 
 ## 📝 How to Start APP TFG 1
 
-To run the first application, make sure the required hardware and software environment are correctly prepared.
+To run the first application, make sure the required hardware and software environments are correctly prepared. If you do not have any hardware, you can run the application in simulation mode.
 
 ```shell
 # 1. Open the Arduino IDE
